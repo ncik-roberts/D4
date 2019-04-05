@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry excluding="com/ibm/wala/eclipse/cg/views/CGView.java|com/ibm/wala/eclipse/cg/views/SelectWalaCGAction.java|com/ibm/wala/eclipse/cg/model/WalaWebPageCGModel.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="data"/>
@@ -8,5 +7,27 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.wala.cast"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.wala.cast.java"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.wala.ide.jdt"/>
+	<classpathentry kind="src" path="/com.ibm.wala.core"/>
+	<classpathentry kind="src" path="/com.ibm.wala.util"/>
+	<classpathentry kind="src" path="/edu.tamu.wala.increpta"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.wala.shrike"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.jobs-3.2.0-v20060603.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.runtime-3.2.0-v20060603.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.equinox.common-3.2.0-v20060603.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jdt.core-3.2.0-v_671.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jface-3.2.0-I20060605-1400.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.osgi-3.2.0-v20060601.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.ui_3.2.0.I20060605-1400.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jdt.ui_3.2.0.v20060605-1400.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.swt_3.2.0.v3232o.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.swt.gtk.linux.x86_64_3.2.0.v3232m.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.commands_3.2.0.I20060605-1400.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.ui.workbench_3.2.0.I20060605-1400.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.resources_3.2.0.v20060603.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -283,6 +283,12 @@ public class EchoDLView extends ViewPart{
 	public void setFocus() {
 	}
 
+	@Override
+	public Object getAdapter(Class arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 }

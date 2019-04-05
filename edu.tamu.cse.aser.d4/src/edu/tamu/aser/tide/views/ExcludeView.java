@@ -114,4 +114,10 @@ public class ExcludeView extends ViewPart{
 		this.selection = selection;
 	}
 
+	@Override
+	public Object getAdapter(Class arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

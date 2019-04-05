@@ -33,7 +33,7 @@ import edu.tamu.aser.tide.plugin.handlers.ConvertHandler;
 public class MyJavaElementChangeReporter implements IElementChangedListener {
 
 	public MyASTVisitor myASTVisitor = new MyASTVisitor();
-	public ASTParser parser = ASTParser.newParser(AST.JLS8);
+	public ASTParser parser = ASTParser.newParser(AST.JLS11);
 
 	public void initialSubtree(ICompilationUnit elem, IStructuredSelection selection, IJavaProject project){
 		parser.setProject(project);

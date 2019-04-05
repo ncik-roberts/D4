@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.commands.common.EventManager;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Adapters;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.text.BadLocationException;
@@ -35,20 +37,21 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.part.WorkbenchPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import edu.tamu.aser.tide.engine.ITIDEBug;
 import edu.tamu.aser.tide.engine.TIDEEngine;
 import edu.tamu.aser.tide.engine.TIDERace;
 
-public class EchoReadWriteView extends ViewPart{
+public class EchoReadWriteView extends WorkbenchPart {
 
 	protected TreeViewer rootViewer;
 	protected TreeViewer concurentRelationViewer;
 	protected BugLabelProvider labelProvider;
 	protected BugDetail bugDetail;
 	protected RelationDetail relationDetail;
-
+	
 	protected Action jumpToLineInEditor;
 	protected Action jumpToDetailLine;
 	protected Action showDetailTree;
@@ -427,5 +430,8 @@ public class EchoReadWriteView extends ViewPart{
 	public void setFocus() {
 	}
 
-
+	@Override
+	public Object getAdapter(Class arg0) {
+		return null;
+	}
 }

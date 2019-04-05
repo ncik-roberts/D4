@@ -4,7 +4,26 @@
 	<classpathentry exported="true" kind="lib" path="config-1.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="scala-java8-compat_2.11-0.7.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="scala-library-2.11.8.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.commands_3.2.0.I20060605-1400.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.jobs-3.2.0-v20060603.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.resources_3.2.0.v20060603.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.equinox.common-3.2.0-v20060603.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jdt.ui_3.2.0.v20060605-1400.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jface-3.2.0-I20060605-1400.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.osgi-3.2.0-v20060601.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.swt_3.2.0.v3232o.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.swt.gtk.linux.x86_64_3.2.0.v3232m.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.text_3.2.0.v20060605-1400.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.ui.workbench.texteditor-3.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/registry-3.5.400-v20140428-1507.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.runtime-3.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.equinox.common-3.8.0.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jdt.core-3.17.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry excluding="edu/tamu/cse/aser/tarp/graph/Test.java|edu/tamu/aser/tide/graph/Test.java|edu/tamu/aser/tide/views/EchoView2.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="data"/>
@@ -67,5 +86,29 @@
 	<classpathentry kind="lib" path="/libs.akka/libs/slf4j-api-1.7.16.jar"/>
 	<classpathentry kind="lib" path="/libs.akka/libs/ssl-config-core_2.11-0.2.1.jar"/>
 	<classpathentry kind="lib" path="/libs.akka/libs/uncommons-maths-1.2.2a.jar"/>
+	<classpathentry kind="src" path="/com.ibm.wala.core"/>
+	<classpathentry kind="src" path="/com.ibm.wala.util"/>
+	<classpathentry kind="src" path="/com.ibm.wala.ide.jdt"/>
+	<classpathentry kind="src" path="/com.ibm.wala.shrike"/>
+	<classpathentry kind="src" path="/com.ibm.wala.eclipse"/>
+	<classpathentry kind="src" path="/edu.tamu.wala.increpta"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.wala.cast"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.wala.ide"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.ibm.wala.cast.java"/>
+	<classpathentry kind="lib" path="/home/nick/Documents/cmu-coursework/15745/final/WALA/build/p2asmaven/maven/eclipse-deps/org.eclipse.jface/3.13.2.v20171022-1656/org.eclipse.jface-3.13.2.v20171022-1656.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="/com.ibm.wala.core.tests"/>
+	<classpathentry kind="lib" path="/home/nick/Documents/cmu-coursework/15745/final/WALA/build/p2asmaven/maven/eclipse-deps/org.eclipse.ui.workbench/3.110.1.v20170704-1208/org.eclipse.ui.workbench-3.110.1.v20170704-1208.jar">
+		<attributes>
+			<attribute name="gradle_used_by_scope" value="main,test"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/edu.tamu.cse.aser.d4remote/lib/eclipse/org.eclipse.ui.ide_3.2.0.I20060605-1400.jar"/>
+	<classpathentry kind="lib" path="/edu.tamu.cse.aser.d4remote/lib/eclipse/org.eclipse.core.expressions_3.2.0.v20060605-1400.jar"/>
+	<classpathentry kind="lib" path="/edu.tamu.cse.aser.d4remote/lib/eclipse/text-3.7.2.jar"/>
+	<classpathentry kind="lib" path="/edu.tamu.cse.aser.d4remote/lib/eclipse/org.eclipse.ui.editors_3.2.0.v20060605-1400.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
