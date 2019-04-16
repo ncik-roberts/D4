@@ -36,3 +36,4 @@ RemoteSystemsTempFiles/
 log_*
 Eclipse.app/
 jars/
+/bin/
