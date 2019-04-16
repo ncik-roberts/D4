@@ -9,7 +9,6 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.core.resources_3.2.0.v20060603.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.equinox.common-3.2.0-v20060603.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jdt.ui_3.2.0.v20060605-1400.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.jface-3.2.0-I20060605-1400.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.osgi-3.2.0-v20060601.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.swt_3.2.0.v3232o.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.swt.gtk.linux.x86_64_3.2.0.v3232m.jar"/>
@@ -20,6 +19,8 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.equinox.common-3.8.0.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jdt.core-3.17.0.jar"/>
 	<classpathentry kind="lib" path="lib/ui-3.3.0-v20070607-0010.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.ui.workbench-3.5.0.I20090603-2000.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jface-3.5.0.I20090525-2000.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="module" value="true"/>
