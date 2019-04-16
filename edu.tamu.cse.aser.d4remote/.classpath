@@ -95,10 +95,5 @@
 	<classpathentry kind="lib" path="lib/eclipse/org.eclipse.text_3.2.0.v20060605-1400.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/org.eclipse.core.expressions_3.2.0.v20060605-1400.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/org.eclipse.ui.editors_3.2.0.v20060605-1400.jar"/>
-	<classpathentry kind="lib" path="/home/nick/Documents/cmu-coursework/15745/final/WALA/build/p2asmaven/maven/eclipse-deps/org.eclipse.ui.workbench/3.110.1.v20170704-1208/org.eclipse.ui.workbench-3.110.1.v20170704-1208.jar">
-		<attributes>
-			<attribute name="gradle_used_by_scope" value="main,test"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
