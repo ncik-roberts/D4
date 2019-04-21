@@ -37,14 +37,13 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.part.WorkbenchPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import edu.tamu.aser.tide.engine.ITIDEBug;
 import edu.tamu.aser.tide.engine.TIDEEngine;
 import edu.tamu.aser.tide.engine.TIDERace;
 
-public class EchoReadWriteView extends WorkbenchPart {
+public class EchoReadWriteView extends ViewPart {
 
 	protected TreeViewer rootViewer;
 	protected TreeViewer concurentRelationViewer;

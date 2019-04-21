@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 
@@ -82,6 +83,7 @@ import edu.tamu.aser.tide.shb.SHBEdge;
 import edu.tamu.aser.tide.shb.SHBGraph;
 import edu.tamu.aser.tide.shb.Trace;
 import edu.tamu.wala.increpta.ipa.callgraph.propagation.IPAPointerAnalysisImpl;
+import edu.tamu.wala.increpta.ipa.callgraph.propagation.IPAPointsToMap;
 import edu.tamu.wala.increpta.ipa.callgraph.propagation.IPAPointsToSetVariable;
 import edu.tamu.wala.increpta.ipa.callgraph.propagation.IPAPropagationGraph;
 import edu.tamu.wala.increpta.ipa.callgraph.propagation.IPASSAPropagationCallGraphBuilder;
@@ -201,15 +203,23 @@ public class TIDEEngine{
 	public boolean useMayAlias = true;//false => lockObject.size == 1;
 
 	//hard write
-	private static Set<String> consideredJDKCollectionClass = HashSetFactory.make();
+	private static final Set<String> JDK_COLLECTION_CLASS = HashSetFactory.make();
 	//currently considered jdk class
-	private static String ARRAYLIST = "<Primordial,Ljava/util/ArrayList>";
-	private static String LINKEDLIST = "<Primordial,Ljava/util/LinkedList>";
-	private static String HASHSET = "<Primordial,Ljava/util/HashSet>";
-	private static String HASHMAP = "<Primordial,Ljava/util/HashMap>";
-	private static String ARRAYS = "<Primordial,Ljava/util/Arrays>";
-	private static String STRING = "<Primordial,Ljava/util/String>";
+	private static final String ARRAYLIST = "<Primordial,Ljava/util/ArrayList>";
+	private static final String LINKEDLIST = "<Primordial,Ljava/util/LinkedList>";
+	private static final String HASHSET = "<Primordial,Ljava/util/HashSet>";
+	private static final String HASHMAP = "<Primordial,Ljava/util/HashMap>";
+	private static final String ARRAYS = "<Primordial,Ljava/util/Arrays>";
+	private static final String STRING = "<Primordial,Ljava/util/String>";
 
+	static {
+		JDK_COLLECTION_CLASS.add(ARRAYLIST);
+		JDK_COLLECTION_CLASS.add(LINKEDLIST);
+		JDK_COLLECTION_CLASS.add(HASHSET);
+		JDK_COLLECTION_CLASS.add(HASHMAP);
+		JDK_COLLECTION_CLASS.add(ARRAYS);
+		JDK_COLLECTION_CLASS.add(STRING);
+	}
 
 	//	for evaluation
 	private boolean isdeleting = false;
@@ -218,24 +228,13 @@ public class TIDEEngine{
 	}
 	SSAInstruction removeInst = null;
 
-
-
-
-
 	public TIDEEngine(IPASSAPropagationCallGraphBuilder builder, String entrySignature,CallGraph callGraph, IPAPropagationGraph flowgraph, IPAPointerAnalysisImpl pointerAnalysis, ActorRef bughub){
-		this.builder = builder;
-		this.callGraph = callGraph;
-		this.pointerAnalysis = pointerAnalysis;
+		this.builder = Objects.requireNonNull(builder);
+		this.callGraph = Objects.requireNonNull(callGraph);
+		this.pointerAnalysis = Objects.requireNonNull(pointerAnalysis);
 		this.maxGraphNodeID = callGraph.getNumberOfNodes() + 1000;
-		this.propagationGraph = flowgraph;
-		this.bughub = bughub;
-
-		consideredJDKCollectionClass.add(ARRAYLIST);
-		consideredJDKCollectionClass.add(LINKEDLIST);
-		consideredJDKCollectionClass.add(HASHSET);
-		consideredJDKCollectionClass.add(HASHMAP);
-		consideredJDKCollectionClass.add(ARRAYS);
-		consideredJDKCollectionClass.add(STRING);
+		this.propagationGraph = Objects.requireNonNull(flowgraph);
+		this.bughub = Objects.requireNonNull(bughub);
 
 		Collection<CGNode> cgnodes = callGraph.getEntrypointNodes();
 		for(CGNode n: cgnodes){
@@ -560,7 +559,6 @@ public class TIDEEngine{
 		}
 	}
 
-
 	private Trace traverseNode(CGNode n) {
 		if(n.getIR() == null)
 			return null;
@@ -613,12 +611,6 @@ public class TIDEEngine{
 		SSACFG cfg = n.getIR().getControlFlowGraph();
 		HashSet<SSAInstruction> catchinsts = InstInsideCatchBlock(cfg);//won't consider rw,lock related to catch blocks
 		SSAInstruction[] insts = n.getIR().getInstructions();
-		for (int i = 0; i < insts.length; i++) {
-			SSAInstruction ssaInstruction = insts[i];
-			System.out.println(ssaInstruction);
-		}
-		System.out.println();
-
 		for(int i=0; i<insts.length; i++){
 			SSAInstruction inst = insts[i];
 			if(inst!=null){
@@ -631,7 +623,7 @@ public class TIDEEngine{
 				if(!method.isSynthetic()){
 					try{//get source code line number of this inst
 						if(n.getIR().getMethod() instanceof IBytecodeMethod){
-							int bytecodeindex = ((IBytecodeMethod) n.getIR().getMethod()).getBytecodeIndex(inst.iindex);
+							int bytecodeindex = ((IBytecodeMethod<?>) n.getIR().getMethod()).getBytecodeIndex(inst.iindex);
 							sourceLineNum = (int)n.getIR().getMethod().getLineNumber(bytecodeindex);
 						}else{
 							SourcePosition position = n.getMethod().getSourcePosition(inst.iindex);
@@ -650,21 +642,22 @@ public class TIDEEngine{
 				}else if (inst instanceof SSAArrayReferenceInstruction){
 					processSSAArrayReferenceInstruction(n, method, inst, sourceLineNum, file, curTrace);
 				}else if (inst instanceof SSAAbstractInvokeInstruction){
-					CallSiteReference csr = ((SSAAbstractInvokeInstruction)inst).getCallSite();
+					SSAAbstractInvokeInstruction ssaInst = (SSAAbstractInvokeInstruction) inst;
+					CallSiteReference csr = ssaInst.getCallSite();
 					MethodReference mr = csr.getDeclaredTarget();
 					IMethod imethod = callGraph.getClassHierarchy().resolveMethod(mr);
 					if(imethod != null){
 						String sig = imethod.getSignature();
 						if(sig.contains("java.util.concurrent") && sig.contains(".submit(Ljava/lang/Runnable;)Ljava/util/concurrent/Future")){
 							//Future runnable
-							PointerKey key = pointerAnalysis.getIPAHeapModel().getPointerKeyForLocal(n, ((SSAAbstractInvokeInstruction) inst).getReceiver());
+							PointerKey key = pointerAnalysis.getIPAHeapModel().getPointerKeyForLocal(n, ssaInst.getReceiver());
 							OrdinalSet<InstanceKey> instances = pointerAnalysis.getPointsToSet(key);
 							for(InstanceKey ins: instances){
 								TypeName name = ins.getConcreteType().getName();
 								CGNode node = threadSigNodeMap.get(name);
 								if(node==null){
 									//TODO: find out which runnable object -- need data flow analysis
-									int param = ((SSAAbstractInvokeInstruction)inst).getUse(1);
+									int param = ssaInst.getUse(1);
 									node = handleRunnable(ins, param, n);
 									if(node==null){
 										System.err.println("ERROR: starting new thread: "+ name);
@@ -680,16 +673,16 @@ public class TIDEEngine{
 						}else if(sig.equals("java.lang.Thread.start()V")
 								|| (sig.contains("java.util.concurrent") && sig.contains("execute"))){
 							//Thread, Executors and ThreadPoolExecutor
-							PointerKey key = pointerAnalysis.getIPAHeapModel().getPointerKeyForLocal(n, ((SSAAbstractInvokeInstruction) inst).getReceiver());
+							PointerKey key = pointerAnalysis.getIPAHeapModel().getPointerKeyForLocal(n, ssaInst.getReceiver());
 							OrdinalSet<InstanceKey> instances = pointerAnalysis.getPointsToSet(key);
 							for(InstanceKey ins: instances){
 								TypeName name = ins.getConcreteType().getName();
 								CGNode node = threadSigNodeMap.get(name);
 								if(node==null){
 									//TODO: find out which runnable object -- need data flow analysis
-									int param = ((SSAAbstractInvokeInstruction)inst).getUse(0);
+									int param = ssaInst.getUse(0);
 									if(sig.contains("java.util.concurrent") && sig.contains("execute")){
-										param = ((SSAAbstractInvokeInstruction)inst).getUse(1);
+										param = ssaInst.getUse(1);
 									}
 									node = handleRunnable(ins, param, n);
 									if(node==null){
@@ -713,14 +706,14 @@ public class TIDEEngine{
 							hasSyncBetween = true;
 						}else if(sig.contains("java.util.concurrent.Future.get()Ljava/lang/Object")){
 							//Future join
-							PointerKey key = pointerAnalysis.getIPAHeapModel().getPointerKeyForLocal(n, ((SSAAbstractInvokeInstruction) inst).getReceiver());
+							PointerKey key = pointerAnalysis.getIPAHeapModel().getPointerKeyForLocal(n, ssaInst.getReceiver());
 							OrdinalSet<InstanceKey> instances = pointerAnalysis.getPointsToSet(key);
 							for(InstanceKey ins: instances){
 								TypeName name = ins.getConcreteType().getName();
 								CGNode node = threadSigNodeMap.get(name);
 								if(node==null){
 									//TODO: find out which runnable object -- need data flow analysis
-									int param = ((SSAAbstractInvokeInstruction)inst).getUse(0);
+									int param = ssaInst.getUse(0);
 									SSAInstruction creation = n.getDU().getDef(param);
 									if(creation instanceof SSAAbstractInvokeInstruction){
 										param = ((SSAAbstractInvokeInstruction)creation).getUse(1);
@@ -741,7 +734,7 @@ public class TIDEEngine{
 						else if(sig.equals("java.lang.Thread.join()V")
 								|| (sig.contains("java.util.concurrent") && sig.contains("shutdown()V"))){
 							//Executors and ThreadPoolExecutor
-							PointerKey key = pointerAnalysis.getIPAHeapModel().getPointerKeyForLocal(n, ((SSAAbstractInvokeInstruction) inst).getReceiver());
+							PointerKey key = pointerAnalysis.getIPAHeapModel().getPointerKeyForLocal(n, ssaInst.getReceiver());
 							OrdinalSet<InstanceKey> instances = pointerAnalysis.getPointsToSet(key);
 							for(InstanceKey ins: instances) {
 								TypeName name = ins.getConcreteType().getName();
@@ -791,7 +784,7 @@ public class TIDEEngine{
 						}else if(sig.equals("java.lang.Thread.<init>(Ljava/lang/Runnable;)V")){
 							//for new Thread(new Runnable) => record its initialization
 							int use0 = inst.getUse(0);
-							threadInits.put(use0, (SSAAbstractInvokeInstruction)inst);
+							threadInits.put(use0, ssaInst);
 						}else{
 							//other method calls
 							processNewMethodInvoke(n, csr, inst, sourceLineNum, file, curTrace);
@@ -1219,7 +1212,7 @@ public class TIDEEngine{
 			return true;
 		}else if(AnalysisUtils.isJDKClass(declaringclass)){
 			String dcName = declaringclass.toString();
-			if(consideredJDKCollectionClass.contains(dcName)){
+			if(JDK_COLLECTION_CLASS.contains(dcName)){
 				return true;
 			}
 		}

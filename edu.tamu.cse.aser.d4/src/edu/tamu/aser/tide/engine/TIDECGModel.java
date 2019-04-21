@@ -6,11 +6,13 @@ package edu.tamu.aser.tide.engine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -140,10 +142,15 @@ public class TIDECGModel extends WalaProjectCGModel {
 	    Thread.currentThread().setContextClassLoader(ourClassLoader);
 		akkasys = ActorSystem.create("bug");
 		IPASSAPropagationCallGraphBuilder builder = (IPASSAPropagationCallGraphBuilder) getCallGraphBuilder();
+		try {
+			builder.makeCallGraph(getOptions());
+		} catch (CancelException e) {
+			throw new RuntimeException(e);
+		}
 		IPAPropagationGraph flowgraph = builder.getSystem().getPropagationGraph();
 		//initial bug engine
 		bughub = akkasys.actorOf(Props.create(BugHub.class, nrOfWorkers), "bughub");
-		bugEngine = new TIDEEngine(builder, entrySignature, callGraph, flowgraph, (IPAPointerAnalysisImpl) engine.getPointerAnalysis(), bughub);
+		bugEngine = new TIDEEngine(builder, entrySignature, callGraph, flowgraph, (IPAPointerAnalysisImpl) builder.getPointerAnalysis(), bughub);
 		BugHub.setPlugin(true);
 		BugWorker.setPlugin(true);
 		bugEngine.setChange(false);
