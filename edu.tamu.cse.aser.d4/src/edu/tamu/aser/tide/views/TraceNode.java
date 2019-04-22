@@ -1,6 +1,6 @@
 package edu.tamu.aser.tide.views;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedList;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -11,9 +11,9 @@ import edu.tamu.aser.tide.plugin.Activator;
 
 public class TraceNode extends TreeNode{
 	protected String name;
-	protected ArrayList<LinkedList<String>> traces;
+	protected List<LinkedList<String>> traces;
 
-	public TraceNode(TreeNode parent, ArrayList<LinkedList<String>> traceMsg) {
+	public TraceNode(TreeNode parent, List<LinkedList<String>> traceMsg) {
 		super(parent);
 		this.traces = traceMsg;
 		initialNode();
@@ -36,7 +36,7 @@ public class TraceNode extends TreeNode{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void createChildren(ArrayList<LinkedList<String>> traces, String fix) {
+	protected void createChildren(List<LinkedList<String>> traces, String fix) {
 		LinkedList<String> trace1 = traces.get(0);
 		LinkedList<String> trace2 = traces.get(1);
 		if(super.parent instanceof RaceNode){

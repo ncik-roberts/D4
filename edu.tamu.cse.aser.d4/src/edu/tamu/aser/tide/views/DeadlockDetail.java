@@ -1,6 +1,7 @@
 package edu.tamu.aser.tide.views;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -11,7 +12,7 @@ import edu.tamu.aser.tide.plugin.Activator;
 
 public class DeadlockDetail extends TreeNode{
 	protected String name;
-	protected HashMap<String, DeadlockNode> map = new HashMap<>();
+	protected Map<String, DeadlockNode> map = new HashMap<>();
 
 	public DeadlockDetail(TreeNode parent) {
 		super(parent);
@@ -29,7 +30,7 @@ public class DeadlockDetail extends TreeNode{
 	}
 
 	@Override
-	protected void createChildren(ArrayList<LinkedList<String>> trace, String fix) {
+	protected void createChildren(List<LinkedList<String>> trace, String fix) {
 		// TODO Auto-generated method stub
 	}
 

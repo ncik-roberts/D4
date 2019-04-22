@@ -1,6 +1,6 @@
 package edu.tamu.aser.tide.views;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedList;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -42,9 +42,8 @@ public class RaceNode extends TreeNode{
 		return Activator.getImageDescriptor("circle-running-icon.png");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	protected void createChildren(ArrayList<LinkedList<String>> trace, String fix) {
+	protected void createChildren(List<LinkedList<String>> trace, String fix) {
 		LinkedList<String> trace1 = trace.get(0);
 		LinkedList<String> trace2 = trace.get(1);
 		if(this instanceof RaceNode){

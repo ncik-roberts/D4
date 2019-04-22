@@ -6,18 +6,16 @@ package edu.tamu.aser.tide.engine;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -51,7 +49,6 @@ import com.ibm.wala.ssa.SSAAbstractInvokeInstruction;
 import com.ibm.wala.ssa.SSAArrayReferenceInstruction;
 import com.ibm.wala.ssa.SSAFieldAccessInstruction;
 import com.ibm.wala.ssa.SSAInstruction;
-import com.ibm.wala.types.FieldReference;
 import com.ibm.wala.util.CancelException;
 import com.ibm.wala.util.WalaException;
 import com.ibm.wala.util.collections.HashSetFactory;
@@ -87,28 +84,29 @@ import edu.tamu.wala.increpta.ipa.callgraph.propagation.IPASSAPropagationCallGra
 
 public class TIDECGModel extends WalaProjectCGModel {
 
-	public AnalysisCache getCache(){
+	public AnalysisCache getCache() {
 		return (AnalysisCache) engine.getCache();
 	}
 
-	public AnalysisOptions getOptions(){
+	public AnalysisOptions getOptions() {
 		return engine.getOptions();
 	}
 
 	private String entrySignature;
 
 	//start bug akka system
-	int nrOfWorkers = 8;//8;
+	int nrOfWorkers = 8;
 	public ActorSystem akkasys;
 	public ActorRef bughub;
 	public static TIDEEngine bugEngine;
 	private static ClassLoader ourClassLoader = ActorSystem.class.getClassLoader();
-	private final static boolean DEBUG = false;// true;
+	private final static boolean DEBUG = false;
+
 	//gui view
 	public EchoRaceView echoRaceView;
 	public EchoDLView echoDLView;
 	public EchoReadWriteView echoRWView;
-	private HashMap<String, HashSet<IMarker>> bug_marker_map = new HashMap<>();
+	private Map<String, Set<IMarker>> bug_marker_map = new HashMap<>();
 
 
 	public TIDECGModel(IJavaProject project, String exclusionsFile, String mainMethodSignature) throws IOException, CoreException {
@@ -122,19 +120,19 @@ public class TIDECGModel extends WalaProjectCGModel {
 				.getActivePage().showView("edu.tamu.aser.tide.views.echotableview");
 	}
 
-	public EchoRaceView getEchoRaceView(){
+	public EchoRaceView getEchoRaceView() {
 		return echoRaceView;
 	}
 
-	public EchoReadWriteView getEchoRWView(){
+	public EchoReadWriteView getEchoRWView() {
 		return echoRWView;
 	}
 
-	public EchoDLView getEchoDLView(){
+	public EchoDLView getEchoDLView() {
 		return echoDLView;
 	}
 
-	public TIDEEngine getBugEngine(){
+	public TIDEEngine getBugEngine() {
 		return bugEngine;
 	}
 
@@ -158,27 +156,25 @@ public class TIDECGModel extends WalaProjectCGModel {
 		bugEngine.detectBothBugs(null);
 	}
 
-	public void detectBugAgain(HashSet<CGNode> changedNodes, HashSet<CGNode> changedModifiers, HashSet<CGNode> updateIRNodes, boolean ptachanges) {
+	public void detectBugAgain(Set<CGNode> changedNodes, Set<CGNode> changedModifiers, Set<CGNode> updateIRNodes, boolean ptachanges) {
 		//update bug engine
 		bugEngine.setChange(true);
 		bugEngine.updateEngine(changedNodes, changedModifiers, updateIRNodes, ptachanges, null);
 	}
 
-	public void ignoreCGNodes(HashSet<CGNode> ignoreNodes) {
+	public void ignoreCGNodes(Set<CGNode> ignoreNodes) {
 		bugEngine.setChange(true);
 		bugEngine.ignoreCGNodes(ignoreNodes);
 	}
 
-	public void considerCGNodes(HashSet<CGNode> considerNodes) {
+	public void considerCGNodes(Set<CGNode> considerNodes) {
 		bugEngine.setChange(true);
 		bugEngine.considerCGNodes(considerNodes);
 	}
 
-
-
 	public void updateGUI(IJavaProject project, IFile file, boolean initial) {
 		try{
-			if(initial){
+			if (initial) {
 				//remove all markers in previous checks
 				IMarker[] markers0 = project.getResource().findMarkers(BugMarker.TYPE_SCARIEST, true, 3);
 				IMarker[] markers1 = project.getResource().findMarkers(BugMarker.TYPE_SCARY, true, 3);
@@ -190,24 +186,24 @@ public class TIDECGModel extends WalaProjectCGModel {
 				}
 				//create new markers
 				IPath fullPath = file.getProject().getFullPath();//full path of the project
-				if(bugEngine.races.isEmpty() && bugEngine.deadlocks.isEmpty())
+				if (bugEngine.races.isEmpty() && bugEngine.deadlocks.isEmpty())
 					System.err.println(" _________________NO BUGS ________________");
 				else
 					System.err.println("\nRaces: " + bugEngine.races.size() + "    Deadlocks: " + bugEngine.deadlocks.size() + "\n");
 
-				for(TIDERace race: bugEngine.races){
+				for(TIDERace race: bugEngine.races) {
 					showRace(fullPath, race);
 				}
-				for(TIDEDeadlock dl: bugEngine.deadlocks){
+				for(TIDEDeadlock dl: bugEngine.deadlocks) {
 					showDeadlock(fullPath, dl);
 				}
 				initialEchoView();
 			}else{
-				HashSet<TIDERace> removedraces = bugEngine.removedraces;
-				HashSet<TIDERace> addedraces = bugEngine.addedraces;
-				HashSet<TIDEDeadlock> removeddeadlocks = bugEngine.removeddeadlocks;
-				HashSet<TIDEDeadlock> addeddeadlocks = bugEngine.addeddeadlocks;
-				if(removedraces.isEmpty() && addedraces.isEmpty()
+				Set<TIDERace> removedraces = bugEngine.removedraces;
+				Set<TIDERace> addedraces = bugEngine.addedraces;
+				Set<TIDEDeadlock> removeddeadlocks = bugEngine.removeddeadlocks;
+				Set<TIDEDeadlock> addeddeadlocks = bugEngine.addeddeadlocks;
+				if (removedraces.isEmpty() && addedraces.isEmpty()
 						&& removeddeadlocks.isEmpty() && addeddeadlocks.isEmpty())
 					return;
 				//remove deleted markers
@@ -235,9 +231,9 @@ public class TIDECGModel extends WalaProjectCGModel {
 		}
 	}
 
-	public void removeMarkerForBug(String key){
-		HashSet<IMarker> markers = bug_marker_map.get(key);
-		if(markers != null){
+	public void removeMarkerForBug(String key) {
+		Set<IMarker> markers = bug_marker_map.get(key);
+		if (markers != null) {
 			for (IMarker marker : markers) {
 				try {
 					IMarker[] dels = new IMarker[1];
@@ -258,9 +254,9 @@ public class TIDECGModel extends WalaProjectCGModel {
 	 * @param file
 	 * @throws CoreException
 	 */
-	public void addBugMarkersForConsider(HashSet<TIDERace> considerbugs, IFile file) throws CoreException {
+	public void addBugMarkersForConsider(Set<TIDERace> considerbugs, IFile file) throws CoreException {
 		IPath fullPath = file.getProject().getFullPath();//full path of the project
-		if(considerbugs == null){
+		if (considerbugs == null) {
 			considerbugs = bugEngine.addedraces;
 		}
 		for (TIDERace add : considerbugs) {
@@ -273,191 +269,48 @@ public class TIDECGModel extends WalaProjectCGModel {
      * we only consider races currently
 	 * @param removedbugs
 	 */
-	public void removeBugMarkersForIgnore(HashSet<TIDERace> removedbugs){
+	public void removeBugMarkersForIgnore(Set<TIDERace> removedbugs) {
 		for (TIDERace race : removedbugs) {
 			String key = race.raceMsg;
 			removeMarkerForBug(key);
 		}
 	}
 
+	private void asyncExec(long delayMillis, Runnable r) {
+		new Thread(() -> {
+			try {
+				Thread.sleep(delayMillis);
+			} catch (InterruptedException e) {
+				// swallow
+				e.printStackTrace();
+			}
+			Display.getDefault().asyncExec(r);
+		}).start();
+	}
+
 	private void initialEchoView() {
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(10);} catch (Exception e) {System.err.println(e);}
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							echoRaceView.initialGUI(bugEngine.races);
-						}
-					});
-					break;
-				}
-			}
-		}).start();
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(10);} catch (Exception e) {System.err.println(e);}
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							echoDLView.initialGUI(bugEngine.deadlocks);
-						}
-					});
-					break;
-				}
-			}
-		}).start();
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(10);} catch (Exception e) {System.err.println(e);}
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							echoRWView.initialGUI(bugEngine.races);
-						}
-					});
-					break;
-				}
-			}
-		}).start();
+		asyncExec(10, () -> echoRaceView.initialGUI(bugEngine.races));
+		asyncExec(10, () -> echoDLView.initialGUI(bugEngine.deadlocks));
+		asyncExec(10, () -> echoRWView.initialGUI(bugEngine.races));
 	}
 
 	private void updateEchoView() {
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(100);} catch (Exception e) {e.printStackTrace();}
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							//do update
-							echoRaceView.updateGUI(bugEngine.addedraces, bugEngine.removedraces);
-						}
-					});
-					break;
-				}
-			}
-		}).start();
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(100);} catch (Exception e) {e.printStackTrace();}
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							//do update
-							echoDLView.updateGUI(bugEngine.addeddeadlocks, bugEngine.removeddeadlocks);
-						}
-					});
-					break;
-				}
-			}
-		}).start();
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(100);} catch (Exception e) {e.printStackTrace();}
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							//do update
-							echoRWView.updateGUI(bugEngine.addedraces, bugEngine.removedraces);
-						}
-					});
-					break;
-				}
-			}
-		}).start();
+		asyncExec(100, () -> echoRaceView.updateGUI(bugEngine.addedraces, bugEngine.removedraces));
+		asyncExec(100, () -> echoDLView.updateGUI(bugEngine.addeddeadlocks, bugEngine.removeddeadlocks));
+		asyncExec(100, () -> echoRWView.updateGUI(bugEngine.addedraces, bugEngine.removedraces));
 	}
 
 	public void updateEchoViewForIgnore() {
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(100);} catch (Exception e) {e.printStackTrace();}
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							//do update
-							echoRaceView.ignoreBugs(bugEngine.removedraces);
-						}
-					});
-					break;
-				}
-			}
-		}).start();
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(100);} catch (Exception e) {e.printStackTrace();}
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							//do update
-							echoRWView.ignoreBugs(bugEngine.removedraces);
-						}
-					});
-					break;
-				}
-			}
-		}).start();
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(100);} catch (Exception e) {e.printStackTrace();}
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							//do update
-							echoDLView.ignoreBugs(bugEngine.removeddeadlocks);
-						}
-					});
-					break;
-				}
-			}
-		}).start();
+		asyncExec(100, () -> echoRaceView.ignoreBugs(bugEngine.removedraces));
+		asyncExec(100, () -> echoRWView.ignoreBugs(bugEngine.removedraces));
+		asyncExec(100, () -> echoDLView.ignoreBugs(bugEngine.removeddeadlocks));
 	}
 
 	public void updateEchoViewForConsider() {
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(200);} catch (Exception e) {e.printStackTrace();}
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							//do update
-							echoRaceView.considerBugs(bugEngine.addedraces);
-						}
-					});
-					break;
-				}
-			}
-		}).start();
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(200);} catch (Exception e) {e.printStackTrace();}
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							//do update
-							echoRWView.considerBugs(bugEngine.addedraces);
-						}
-					});
-					break;
-				}
-			}
-		}).start();
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-					try { Thread.sleep(200);} catch (Exception e) {e.printStackTrace();}
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							//do update
-							echoDLView.considerBugs(bugEngine.addeddeadlocks);//currently, not consider
-						}
-					});
-					break;
-				}
-			}
-		}).start();
+		asyncExec(100, () -> echoRaceView.considerBugs(bugEngine.addedraces));
+		asyncExec(200, () -> echoRWView.considerBugs(bugEngine.addedraces));
+		asyncExec(200, () -> echoDLView.considerBugs(bugEngine.addeddeadlocks)); //currently, not consider
 	}
-
-
 
 	private void showDeadlock(IPath fullPath, TIDEDeadlock bug) throws CoreException {
 		DLockNode l11 = bug.lp1.lock1;
@@ -478,7 +331,7 @@ public class TIDECGModel extends WalaProjectCGModel {
 		String deadlockMsg = "Deadlock: ("+sig11  +","+sig12+ ";  "+sig21+ ","+sig22+ ")";
 		deadlockMsg.replace("$", "");
 		System.err.println(deadlockMsg);
-		ArrayList<LinkedList<String>> traceMsg = obtainTraceOfDeadlock(bug);
+		List<LinkedList<String>> traceMsg = obtainTraceOfDeadlock(bug);
 //		String fixMsg = obtainFixOfDeadlock(bug);
 		bug.setBugInfo(deadlockMsg, traceMsg, null);
 
@@ -487,32 +340,32 @@ public class TIDECGModel extends WalaProjectCGModel {
 		IMarker marker3 = null;
 		IMarker marker4 = null;
 		IFile file11 = l11.getFile();
-		if(file11 == null){
+		if (file11 == null) {
 			marker1 = getFileFromSigDL(fullPath,sig11,traceMsg.get(0), line11, deadlockMsg);
 		}else{
 			marker1 = createMarkerDL(file11,line11,deadlockMsg);
 		}
 		IFile file12 = l12.getFile();
-		if(file12 == null){
+		if (file12 == null) {
 			marker2 = getFileFromSigDL(fullPath,sig12,traceMsg.get(1), line12, deadlockMsg);
 		}else{
 			marker2 = createMarkerDL(file12,line12,deadlockMsg);
 		}
 		IFile file21 = l21.getFile();
-		if(file21 == null){
+		if (file21 == null) {
 			marker3 = getFileFromSigDL(fullPath,sig21,traceMsg.get(2), line21, deadlockMsg);
 		}else{
 			marker3 = createMarkerDL(file21,line21,deadlockMsg);
 		}
 		IFile file22 = l22.getFile();
-		if(file22 == null){
+		if (file22 == null) {
 			marker4 = getFileFromSigDL(fullPath,sig22,traceMsg.get(3), line22, deadlockMsg);
 		}else{
 			marker4 = createMarkerDL(file22,line22,deadlockMsg);
 		}
 
 		//store
-		HashSet<IMarker> newMarkers = new HashSet<>();
+		Set<IMarker> newMarkers = new HashSet<>();
 		newMarkers.add(marker1);
 		newMarkers.add(marker2);
 		newMarkers.add(marker3);
@@ -526,19 +379,19 @@ public class TIDECGModel extends WalaProjectCGModel {
 		MemNode wnode = race.node2;
 		int findex = sig.indexOf('.');
 		int lindex = sig.lastIndexOf('.');
-		if(findex!=lindex)
+		if (findex!=lindex)
 			sig =sig.substring(0, lindex);//remove instance hashcode
 
 		String raceMsg = "Race: "+sig+" ("+rnode.getSig()+", "+wnode.getSig()+")";
 		raceMsg.replace("$", "");
 		System.err.println(raceMsg + rnode.getObjSig().toString());
-		ArrayList<LinkedList<String>> traceMsg = obtainTraceOfRace(race);
+		List<LinkedList<String>> traceMsg = obtainTraceOfRace(race);
 //		String fixMsg = obtainFixOfRace(race);
 		race.setBugInfo(raceMsg, traceMsg, null);
 
 		IMarker marker1 = null;
 		IFile file1 = rnode.getFile();
-		if(file1 == null){
+		if (file1 == null) {
 			marker1 = getFileFromSigRace(fullPath,rnode.getSig(),traceMsg.get(0), rnode.getLine(), raceMsg);
 		}else{
 			marker1 = createMarkerRace(file1, rnode.getLine(), raceMsg);
@@ -546,104 +399,25 @@ public class TIDECGModel extends WalaProjectCGModel {
 
 		IMarker marker2 = null;
 		IFile file2 = wnode.getFile();
-		if(file2 == null){
+		if (file2 == null) {
 			marker2 = getFileFromSigRace(fullPath,wnode.getSig(),traceMsg.get(1), wnode.getLine(), raceMsg);
 		}else{
 			marker2 = createMarkerRace(file2, wnode.getLine(), raceMsg);
 		}
 
 		//store bug -> markers
-		HashSet<IMarker> newMarkers = new HashSet<>();
+		Set<IMarker> newMarkers = new HashSet<>();
 		newMarkers.add(marker1);
 		newMarkers.add(marker2);
 		bug_marker_map.put(raceMsg, newMarkers);
 	}
 
-
-	private String obtainFixOfRace(TIDERace race) {
-		MemNode node1 = race.node1;
-		MemNode node2 = race.node2;
-		String prefix1 = node1.getPrefix();
-		String prefix2 = node2.getPrefix();
-		FieldReference field1 = null;
-		FieldReference field2 = null;
-		if(node1.inst instanceof SSAFieldAccessInstruction){
-			field1 = ((SSAFieldAccessInstruction)node1.inst).getDeclaredField();
-		}
-		if(node2.inst instanceof SSAFieldAccessInstruction){
-			field2 = ((SSAFieldAccessInstruction)node2.inst).getDeclaredField();
-		}
-
-		StringBuffer sb = new StringBuffer("Fix Suggestion Of Race: ");
-		if(prefix1.equals(prefix2)){
-			if(field1 == null || field2 == null){
-				//array
-				String class1 = node1.getSig().substring(0, node1.getSig().indexOf(':'));
-				String class2 = node2.getSig().substring(0, node2.getSig().indexOf(':'));
-				if(class1.equals(class2)){
-					//same var
-					sb.append("add synchronizations to protect the array: " +
-							" in " + class1.toString());
-				}else{
-					sb.append("add common synchronizations to protect the array: " +
-							" in " + class1.toString() + " and " + class2.toString());
-				}
-			}else{
-				//field
-				String class1 = field1.getDeclaringClass().toString();
-				String class2 = field2.getDeclaringClass().toString();
-				if(class1.equals(class2)){
-					sb.append("add synchronizations to protect: " + field1.getName().toString() +
-							" in " + class1.toString().substring(class1.indexOf("L")+1, class1.length()-1));
-				}else{
-					sb.append("add common synchronizations to protect: " + field1.getName().toString() +
-							" in " + class1.substring(class1.indexOf("L")+1, class1.length()-1)
-							+ " and " + field2.getName().toString()
-							+ class2.substring(class2.indexOf("L")+1, class2.length()-1));
-				}
-			}
-		}else{
-			//need to find the common pointer
-			System.out.println(" == no suggestion now.");
-			sb.append("no suggestion now.");
-		}
-		return new String(sb);
-	}
-
-
-	private String obtainFixOfDeadlock(TIDEDeadlock bug) {
-		DLockNode l11 = bug.lp1.lock1;
-		DLockNode l12 = bug.lp1.lock2;
-		DLockNode l21 = bug.lp2.lock1;
-		DLockNode l22 = bug.lp2.lock2;
-
-		String sig11 = l11.getInstSig();
-		String sig12 = l12.getInstSig();
-		String sig21 = l21.getInstSig();
-		String sig22 = l22.getInstSig();
-
-		int line11 = l11.getLine();
-		int line12 = l12.getLine();
-		int line21 = l21.getLine();
-		int line22 = l22.getLine();
-
-		StringBuffer sb = new StringBuffer("Fix Suggestion Of Deadlock: ");
-//		System.err.println("Fix Suggestion Of Deadlock: ");
-//		System.out.println(" == exchange the lock order on line " + line11 + " with line " + line12);
-		sb.append("exchange the lock order between line " + line11 + " in "
-		        + l11.getBelonging().getMethod().getDeclaringClass().getName().toString()
-				+ " and line " + line12 + " in "
-		        + l12.getBelonging().getMethod().getDeclaringClass().getName().toString());
-		return new String(sb);
-	}
-
-
-	private ArrayList<LinkedList<String>> obtainTraceOfRace(TIDERace race) {
+	private List<LinkedList<String>> obtainTraceOfRace(TIDERace race) {
 		MemNode rw1 = race.node1;
 		MemNode rw2 = race.node2;
 		int tid1 = race.tid1;
 		int tid2 = race.tid2;
-		ArrayList<LinkedList<String>> traces = new ArrayList<>();
+		List<LinkedList<String>> traces = new ArrayList<>();
 		LinkedList<String> trace1 = obtainTraceOfINode(tid1, rw1, race, 1);
 		LinkedList<String> trace2 = obtainTraceOfINode(tid2, rw2, race, 2);
 		traces.add(trace1);
@@ -651,14 +425,14 @@ public class TIDECGModel extends WalaProjectCGModel {
 		return traces;
 	}
 
-	private ArrayList<LinkedList<String>> obtainTraceOfDeadlock(TIDEDeadlock bug) {
+	private List<LinkedList<String>> obtainTraceOfDeadlock(TIDEDeadlock bug) {
 		DLockNode l11 = bug.lp1.lock1;//1
 		DLockNode l12 = bug.lp1.lock2;
 		DLockNode l21 = bug.lp2.lock1;//1
 		DLockNode l22 = bug.lp2.lock2;
 		int tid1 = bug.tid1;
 		int tid2 = bug.tid2;
-		ArrayList<LinkedList<String>> traces = new ArrayList<>();
+		List<LinkedList<String>> traces = new ArrayList<>();
 		LinkedList<String> trace1 = obtainTraceOfINode(tid1, l11, bug, 1);
 		trace1.add("   >> nested with ");
 //		trace1.add(l12.toString());
@@ -689,7 +463,7 @@ public class TIDECGModel extends WalaProjectCGModel {
 	private LinkedList<String> obtainTraceOfINode(int tid, INode rw1, ITIDEBug bug, int idx) {
 		LinkedList<String> trace = new LinkedList<>();
 		TIDEEngine engine;
-		if(DEBUG){
+		if (DEBUG) {
 			engine = ReproduceBenchmarks.engine;
 		}else{
 			engine = TIDECGModel.bugEngine;
@@ -700,9 +474,9 @@ public class TIDECGModel extends WalaProjectCGModel {
 		CGNode node = rw1.getBelonging();
 		SHBEdge edge = shb.getIncomingEdgeWithTidForShowTrace(node, tid);
 		INode parent = null;
-		if(edge == null){
+		if (edge == null) {
 			StartNode startNode = engine.mapOfStartNode.get(tid);
-			if(startNode != null){
+			if (startNode != null) {
 				parent = startNode;
 				tid = startNode.getParentTID();
 			}else{
@@ -711,36 +485,36 @@ public class TIDECGModel extends WalaProjectCGModel {
 		}else{
 			parent = edge.getSource();
 		}
-		while(parent != null){
+		while(parent != null) {
 			writeDownMyInfo(trace, parent, bug);
 			CGNode node_temp = parent.getBelonging();
-			if(node_temp != null){
+			if (node_temp != null) {
 				//this is a kid thread start node
-				if(!node.equals(node_temp)){
+				if (!node.equals(node_temp)) {
 					node = node_temp;
 					edge = shb.getIncomingEdgeWithTidForShowTrace(node, tid);
-					if(edge == null){
+					if (edge == null) {
 						//run method: tsp
-						if(node_temp.getMethod().getName().toString().contains("run")){
+						if (node_temp.getMethod().getName().toString().contains("run")) {
 							StartNode startNode = engine.mapOfStartNode.get(tid);
 							tid = startNode.getParentTID();
 							edge = shb.getIncomingEdgeWithTidForShowTrace(node, tid);
-							if(edge == null){
+							if (edge == null) {
 								break;
 							}
 						}else
 							break;
 					}
 					parent = edge.getSource();
-					if(parent instanceof StartNode){
+					if (parent instanceof StartNode) {
 						tid = ((StartNode) parent).getParentTID();
 					}
 				}else{//recursive calls
-					HashSet<SHBEdge> edges = shb.getAllIncomingEdgeWithTid(node, tid);
+					Set<SHBEdge> edges = shb.getAllIncomingEdgeWithTid(node, tid);
 					for (SHBEdge edge0 : edges) {
-						if(!edge.equals(edge0)){
+						if (!edge.equals(edge0)) {
 							parent = edge0.getSource();
-							if(parent instanceof StartNode){
+							if (parent instanceof StartNode) {
 								tid = ((StartNode) parent).getParentTID();
 							}
 							break;
@@ -757,29 +531,29 @@ public class TIDECGModel extends WalaProjectCGModel {
 	private void replaceRootCauseForRace(LinkedList<String> trace, INode root, ITIDEBug bug, int idx) {
 		//because trace comes into jdk libraries, which cannot create markers in jdk jar,
 		//replace root cause to variables in user programs
- 		if(root instanceof MethodNode){
+ 		if (root instanceof MethodNode) {
 			MethodNode call = (MethodNode) root;
 			SSAAbstractInvokeInstruction inst = call.getInvokeInst();
 			CGNode rCgNode = call.getBelonging();
 			SSAInstruction[] insts = rCgNode.getIR().getInstructions();
 			int param = inst.getUse(0);
-			if(param != -1){
+			if (param != -1) {
 				//find root variable
 				SSAInstruction rootV = rCgNode.getDU().getDef(param);
 				String instSig = null;
 				String sig = null;
 				int sourceLineNum = -1;
 				IFile file = null;
-				if(rootV instanceof SSAFieldAccessInstruction){
+				if (rootV instanceof SSAFieldAccessInstruction) {
 					IMethod method = rCgNode.getMethod();
 					try {
-						if(rCgNode.getIR().getMethod() instanceof IBytecodeMethod){
-							int bytecodeindex = ((IBytecodeMethod) rCgNode.getIR().getMethod()).getBytecodeIndex(inst.iindex);
+						if (rCgNode.getIR().getMethod() instanceof IBytecodeMethod) {
+							int bytecodeindex = ((IBytecodeMethod<?>) rCgNode.getIR().getMethod()).getBytecodeIndex(inst.iindex);
 							sourceLineNum = (int)rCgNode.getIR().getMethod().getLineNumber(bytecodeindex);
 						}else{
 							SourcePosition position = rCgNode.getMethod().getSourcePosition(inst.iindex);
 							sourceLineNum = position.getFirstLine();
-							if(position instanceof JdtPosition){
+							if (position instanceof JdtPosition) {
 								file = ((JdtPosition) position).getEclipseFile();
 							}
 						}
@@ -797,7 +571,7 @@ public class TIDECGModel extends WalaProjectCGModel {
 				//replace
 				TIDERace race = (TIDERace) bug;
 				MemNode node = null;
-				if(idx == 1){
+				if (idx == 1) {
 					node = race.node1;
 				}else{
 					node = race.node2;
@@ -815,9 +589,9 @@ public class TIDECGModel extends WalaProjectCGModel {
 				String classname = rCgNode.getMethod().getDeclaringClass().toString();
 				String methodname = rCgNode.getMethod().getName().toString();
 				String replace = null;
-				if(node instanceof ReadNode){
+				if (node instanceof ReadNode) {
 					replace = "Reading at line " + sourceLineNum + " in " + classname.substring(classname.indexOf(':') +3, classname.length()) + "." + methodname;
-				}else if(node instanceof WriteNode){
+				}else if (node instanceof WriteNode) {
 					replace =  "Writing at line " + sourceLineNum + " in " + classname.substring(classname.indexOf(':') +3, classname.length()) + "." + methodname;
 				}
 				trace.removeLast();
@@ -828,27 +602,27 @@ public class TIDECGModel extends WalaProjectCGModel {
 			System.out.println();
 	}
 
-	private boolean writeDownMyInfo(LinkedList<String> trace, INode node, ITIDEBug bug){
+	private boolean writeDownMyInfo(LinkedList<String> trace, INode node, ITIDEBug bug) {
 		String sub = null;
 		IFile file = null;
 		int line = 0;
-		if(node instanceof ReadNode){
+		if (node instanceof ReadNode) {
 			sub = ((ReadNode)node).toString();
 			file = ((ReadNode)node).getFile();
 			line = ((ReadNode)node).getLine();
-		}else if(node instanceof WriteNode){
+		}else if (node instanceof WriteNode) {
 			sub = ((WriteNode)node).toString();
 			file = ((WriteNode)node).getFile();
 			line = ((WriteNode)node).getLine();
-		}else if(node instanceof SyncNode){
+		}else if (node instanceof SyncNode) {
 			sub = ((SyncNode)node).toString();
 			file = ((SyncNode)node).getFile();
 			line = ((SyncNode)node).getLine();
-		}else if(node instanceof MethodNode){
+		}else if (node instanceof MethodNode) {
 			sub = ((MethodNode) node).toString();
 			file = ((MethodNode) node).getFile();
 			line = ((MethodNode) node).getLine();
-		}else if(node instanceof StartNode){
+		}else if (node instanceof StartNode) {
 			sub = ((StartNode) node).toString();
 			file = ((StartNode) node).getFile();
 			line = ((StartNode) node).getLine();
@@ -863,32 +637,30 @@ public class TIDECGModel extends WalaProjectCGModel {
 
 
 	private IMarker createMarkerRace(IFile file, int line, String msg) throws CoreException {
-		Map<String, Object> attributes = new HashMap<String, Object>();
+		Map<String, Object> attributes = new HashMap<>();
 		attributes.put(IMarker.LINE_NUMBER, line);
 		attributes.put(IMarker.MESSAGE, msg);
 		IMarker newMarker = file.createMarker(BugMarker.TYPE_SCARIEST);
 		newMarker.setAttributes(attributes);
-		IMarker[] problems = file.findMarkers(BugMarker.TYPE_SCARIEST,true,IResource.DEPTH_INFINITE);
 		return newMarker;
 	}
 
 	private IMarker createMarkerDL(IFile file, int line, String msg) throws CoreException{
 		//for deadlock markers
-		Map<String, Object> attributes = new HashMap<String, Object>();
+		Map<String, Object> attributes = new HashMap<>();
 		attributes.put(IMarker.LINE_NUMBER, line);
 		attributes.put(IMarker.MESSAGE,msg);
 		IMarker newMarker = file.createMarker(BugMarker.TYPE_SCARY);
 		newMarker.setAttributes(attributes);
-		IMarker[] problems = file.findMarkers(BugMarker.TYPE_SCARY,true,IResource.DEPTH_INFINITE);
 		return newMarker;
 	}
 
 	private IMarker getFileFromSigRace(IPath fullPath, String sig, LinkedList<String> trace, int line, String msg) throws CoreException{//":"
-		if(sig.contains("java/util/")){
+		if (sig.contains("java/util/")) {
 			Object[] infos = trace.toArray();
 			for (int i = infos.length -1; i >= 0; i--) {
 				String info = (String) infos[i];
-				if(!info.contains("java/util/")){
+				if (!info.contains("java/util/")) {
 					String need = (String) infos[i+1];
 					int idx_start = need.lastIndexOf(" ") + 1;
 					int idx_end = need.lastIndexOf(".");
@@ -902,9 +674,9 @@ public class TIDECGModel extends WalaProjectCGModel {
 			}
 		}
 		String name = sig;
-		if(sig.contains(":"))
+		if (sig.contains(":"))
 			name = sig.substring(0,sig.indexOf(':'));
-		if(name.contains("$"))
+		if (name.contains("$"))
 			name=name.substring(0, name.indexOf("$"));
 		name=name+".java";
 
@@ -915,11 +687,11 @@ public class TIDECGModel extends WalaProjectCGModel {
 	}
 
 	private IMarker getFileFromSigDL(IPath fullPath, String sig, LinkedList<String> trace, int line, String msg) throws CoreException{//":"
-		if(sig.contains("java/util/")){
+		if (sig.contains("java/util/")) {
 			Object[] infos = trace.toArray();
 			for (int i = infos.length -1; i >= 0; i--) {
 				String info = (String) infos[i];
-				if(!info.contains("java/util/")){
+				if (!info.contains("java/util/")) {
 					String need = (String) infos[i+1];
 					int idx_start = need.lastIndexOf(" ") + 1;
 					int idx_end = need.lastIndexOf(".");
@@ -929,9 +701,9 @@ public class TIDECGModel extends WalaProjectCGModel {
 			}
 		}
 		String name = sig;
-		if(sig.contains(":"))
+		if (sig.contains(":"))
 			name = sig.substring(0,sig.indexOf(':'));
-		if(name.contains("$"))
+		if (name.contains("$"))
 			name=name.substring(0, name.indexOf("$"));
 		name=name+".java";
 
@@ -946,7 +718,7 @@ public class TIDECGModel extends WalaProjectCGModel {
 	private Iterable<Entrypoint> entryPoints;
 	@Override
 	protected Iterable<Entrypoint> getEntrypoints(AnalysisScope analysisScope, IClassHierarchy classHierarchy) {
-		if(entryPoints==null){
+		if (entryPoints==null) {
 			entryPoints = findEntryPoints(classHierarchy,entrySignature);
 		}
 		return entryPoints;
@@ -960,12 +732,12 @@ public class TIDECGModel extends WalaProjectCGModel {
 			if (!AnalysisUtils.isJDKClass(klass)) {
 				for (IMethod method : klass.getDeclaredMethods()) {
 					try {
-						if(method.isStatic()&&method.isPublic()
+						if (method.isStatic()&&method.isPublic()
 								&&method.getName().toString().equals("main")
 								&&method.getDescriptor().toString().equals(ConvertHandler.DESC_MAIN))
 
 							result.add(new DefaultEntrypoint(method, classHierarchy));
-						else if(method.isPublic()&&!method.isStatic()
+						else if (method.isPublic()&&!method.isStatic()
 								&&method.getName().toString().equals("run")
 								&&method.getDescriptor().toString().equals("()V"))
 						{
@@ -993,7 +765,7 @@ public class TIDECGModel extends WalaProjectCGModel {
 		return InferGraphRoots.inferRoots(cg);
 	}
 
-	public PointerAnalysis getPointerAnalysis() {
+	public PointerAnalysis<?> getPointerAnalysis() {
 		return engine.getPointerAnalysis();
 	}
 
@@ -1001,20 +773,18 @@ public class TIDECGModel extends WalaProjectCGModel {
 		return engine.getClassHierarchy();
 	}
 
-	public CGNode getOldCGNode(com.ibm.wala.classLoader.IMethod m_old){
-		CGNode node = null;
+	public CGNode getOldCGNode(com.ibm.wala.classLoader.IMethod m_old) {
 		IPAExplicitCallGraph cg = (IPAExplicitCallGraph)callGraph;
 		try {
-			node = cg.findOrCreateNode(m_old, Everywhere.EVERYWHERE);
+			return cg.findOrCreateNode(m_old, Everywhere.EVERYWHERE);
 		} catch (CancelException e) {
+			throw new RuntimeException(e);
 		}
-		return node;
 	}
 
 	public CGNode updateCallGraph(com.ibm.wala.classLoader.IMethod m_old,
 			com.ibm.wala.classLoader.IMethod m, IR ir, DefUse du) {
-		CGNode node = null;
-		try{
+		try {
 			IPAExplicitCallGraph cg = (IPAExplicitCallGraph) getGraph();
 			IPAExplicitNode oldNode = (IPAExplicitNode) cg.findOrCreateNode(m_old, Everywhere.EVERYWHERE);
 			oldNode.updateMethod(m, ir, du);
@@ -1022,8 +792,8 @@ public class TIDECGModel extends WalaProjectCGModel {
 			cg.updateNode(m_old, m, Everywhere.EVERYWHERE, oldNode);
 			//update call site?
 			oldNode.clearAllTargets();//clear old targets
-			if(getCallGraphBuilder()!=null &&
-					getCallGraphBuilder() instanceof IPASSAPropagationCallGraphBuilder){
+			if (getCallGraphBuilder()!=null &&
+					getCallGraphBuilder() instanceof IPASSAPropagationCallGraphBuilder) {
 				IPASSAPropagationCallGraphBuilder builder = (IPASSAPropagationCallGraphBuilder) getCallGraphBuilder();
 				IPAPropagationSystem system = builder.getSystem();
 				system.setUpdateChange(true);
@@ -1033,69 +803,47 @@ public class TIDECGModel extends WalaProjectCGModel {
 				}while(!system.emptyWorkList());
 				system.setUpdateChange(false);
 			}
-			node = oldNode;
-		}catch(Exception e)
-		{
-			e.printStackTrace();
+			return oldNode;
+		} catch (CancelException e) {
+			throw new RuntimeException(e);
 		}
-		return node;
 	}
 
+	public void updatePointerAnalysis(CGNode node, IR irOld, IR ir) {
+
+    	Map<String,SSAInstruction> mapOld = new HashMap<>();
+    	Map<String,SSAInstruction> mapNew = new HashMap<>();
 
 
-	public void updatePointerAnalysis(CGNode node, IR ir_old, IR ir) {
+        ControlFlowGraph<SSAInstruction, ISSABasicBlock> cfg_old = irOld.getControlFlowGraph();
 
-    	//compute diff
-    	SSAInstruction[] insts_old = ir_old.getInstructions();
-    	SSAInstruction[] insts = ir.getInstructions();
-
-    	HashMap<String,SSAInstruction> mapOld = new HashMap<String,SSAInstruction>();
-    	HashMap<String,SSAInstruction> mapNew = new HashMap<String,SSAInstruction>();
-
-
-        ControlFlowGraph<SSAInstruction, ISSABasicBlock> cfg_old = ir_old.getControlFlowGraph();
-        ControlFlowGraph<SSAInstruction, ISSABasicBlock> cfg_new = ir.getControlFlowGraph();
-
-
-    	for(int i=0;i<insts_old.length;i++){
-    		SSAInstruction inst = insts_old[i];
-    		if(inst!=null){
-    			String str = inst.toString();
-    			mapOld.put(str, inst);
+    	for (SSAInstruction inst : irOld.getInstructions()) {
+    		if (inst != null) {
+    			mapOld.put(inst.toString(), inst);
     		}
     	}
-    	for(int i=0;i<insts.length;i++){
-    		SSAInstruction inst = insts[i];
-    		if(inst!=null){
-    			String str = inst.toString();
-    			mapNew.put(str, inst);
+    	for (SSAInstruction inst : ir.getInstructions()) {
+    		if (inst!=null) {
+    			mapNew.put(inst.toString(), inst);
     		}
     	}
 
-    	HashMap<SSAInstruction,ISSABasicBlock> deleted = new HashMap<SSAInstruction,ISSABasicBlock>();
-    	HashMap<SSAInstruction,ISSABasicBlock> added = new HashMap<SSAInstruction,ISSABasicBlock>();
+    	Map<SSAInstruction,ISSABasicBlock> deleted = new HashMap<>();
 
-    	for(String s:mapOld.keySet()){
-    		if(!mapNew.keySet().contains(s)){
-    			SSAInstruction inst = mapOld.get(s);
-    			if(inst instanceof SSAFieldAccessInstruction
+    	for(Map.Entry<String, SSAInstruction> entry : mapOld.entrySet()) {
+    		String key = entry.getKey();
+  			SSAInstruction inst = entry.getValue();
+    		if (!mapNew.containsKey(key)) {
+    			if (inst instanceof SSAFieldAccessInstruction
     					|| inst instanceof SSAAbstractInvokeInstruction
-    					|| inst instanceof SSAArrayReferenceInstruction){
+    					|| inst instanceof SSAArrayReferenceInstruction) {
         			ISSABasicBlock bb = cfg_old.getBlockForInstruction(inst.iindex);
-        			deleted.put(inst,bb);
+        			deleted.put(inst, bb);
     			}
     		}
     	}
-//    	for(String s:mapNew.keySet()){
-//    		if(!mapOld.keySet().contains(s)){
-//    			SSAInstruction inst = mapNew.get(s);
-//    			ISSABasicBlock bb = cfg_new.getBlockForInstruction(inst.iindex);
-//    			added.put(inst,bb);
-//    		}
-//    	}
 
-//		((IPASSAPropagationCallGraphBuilder) super.getCallGraphBuilder()).updatePointerAnalaysis(node, added, deleted,ir_old, ir);
-		engine.updatePointerAnalaysis(node, deleted, ir_old);
+		engine.updatePointerAnalaysis(node, deleted, irOld);
 	}
 
 	public void clearChanges() {

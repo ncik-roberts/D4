@@ -1,14 +1,14 @@
 package edu.tamu.aser.tide.akkabug;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class FindSharedVarJob {
 
 	String sig;
-	HashMap<Integer, Integer> readMap;
-	HashMap<Integer, Integer> writeMap;
+	Map<Integer, Integer> readMap;
+	Map<Integer, Integer> writeMap;
 
-	public FindSharedVarJob(String sig, HashMap<Integer, Integer> hashMap, HashMap<Integer, Integer> hashMap2) {
+	public FindSharedVarJob(String sig, Map<Integer, Integer> hashMap, Map<Integer, Integer> hashMap2) {
 		// TODO Auto-generated constructor stub
 		this.sig = sig;
 		this.readMap = hashMap2;
@@ -19,11 +19,11 @@ public class FindSharedVarJob {
 		return sig;
 	}
 
-	public HashMap<Integer, Integer> getReadMap(){
+	public Map<Integer, Integer> getReadMap(){
 		return readMap;
 	}
 
-	public HashMap<Integer, Integer> getWriteMap(){
+	public Map<Integer, Integer> getWriteMap(){
 		return writeMap;
 	}
 

@@ -12,6 +12,7 @@ package com.ibm.wala.cast.java.client.d4;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -103,7 +104,7 @@ public class D4JDTJavaSourceAnalysisEngine<I extends InstanceKey> extends Eclips
     return builder;
   }
 
-  public void updatePointerAnalaysis(CGNode node, HashMap<SSAInstruction, ISSABasicBlock> deleted, IR ir_old) {
+  public void updatePointerAnalaysis(CGNode node, Map<SSAInstruction, ISSABasicBlock> deleted, IR ir_old) {
     ((IPASSAPropagationCallGraphBuilder) builder).updatePointerAnalaysis(node, deleted, ir_old);
   }
 

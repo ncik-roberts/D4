@@ -1,7 +1,7 @@
 package edu.tamu.aser.tide.akkabug;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -11,18 +11,18 @@ import edu.tamu.aser.tide.nodes.DLPair;
 
 public class CheckDeadlock implements ITIDEBug{
 
-	private ArrayList<DLPair> dLLockPairs;
+	private List<DLPair> dLLockPairs;
 	private int tid;
 	private Set<Integer> tids;
 
-	public CheckDeadlock(Integer tid1, Set<Integer> tids, ArrayList<DLPair> dLLockPairs2) {
+	public CheckDeadlock(Integer tid1, Set<Integer> tids, List<DLPair> dLLockPairs2) {
 		// TODO Auto-generated constructor stub
 		this.tid = tid1;
 		this.dLLockPairs = dLLockPairs2;
 		this.tids = tids;
 	}
 
-	public ArrayList<DLPair> getPairs(){
+	public List<DLPair> getPairs(){
 		return dLLockPairs;
 	}
 

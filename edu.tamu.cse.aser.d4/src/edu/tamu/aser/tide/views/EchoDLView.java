@@ -2,6 +2,7 @@ package edu.tamu.aser.tide.views;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -45,7 +46,7 @@ public class EchoDLView extends ViewPart{
 	protected Action jumpToLineInEditor;
 
 	protected TIDEEngine bugEngine;
-	protected HashSet<TIDEDeadlock> existingbugs = new HashSet<>();
+	protected Set<TIDEDeadlock> existingbugs = new HashSet<>();
 
 	public EchoDLView() {
 		super();
@@ -125,7 +126,7 @@ public class EchoDLView extends ViewPart{
 					ITreeNode parent = ((EventNode) obj).getParent().getParent();
 					if(parent instanceof RaceNode){
 						RaceNode race = (RaceNode) parent;
-						HashMap<String, IFile> map = race.race.event_ifile_map;
+						Map<String, IFile> map = race.race.event_ifile_map;
 						IFile file = map.get(((EventNode) obj).getName());
 
 						IEditorRegistry editorRegistry = PlatformUI.getWorkbench().getEditorRegistry();
@@ -137,7 +138,7 @@ public class EchoDLView extends ViewPart{
 							if (document != null) {
 								IRegion lineInfo = null;
 								try {
-									HashMap<String, Integer> map2 = race.race.event_line_map;
+									Map<String, Integer> map2 = race.race.event_line_map;
 									int line = map2.get(((EventNode) obj).getName());
 									lineInfo = document.getLineInformation(line - 1);
 								} catch (BadLocationException e) {
@@ -153,7 +154,7 @@ public class EchoDLView extends ViewPart{
 						}
 					}else if(parent instanceof DeadlockNode){
 						DeadlockNode dl = (DeadlockNode) parent;
-						HashMap<String, IFile> map = dl.deadlock.event_ifile_map;
+						Map<String, IFile> map = dl.deadlock.event_ifile_map;
 						IFile file = map.get(((EventNode) obj).getName());
 						if(file == null)
 							return;
@@ -167,7 +168,7 @@ public class EchoDLView extends ViewPart{
 							if (document != null) {
 								IRegion lineInfo = null;
 								try {
-									HashMap<String, Integer> map2 = dl.deadlock.event_line_map;
+									Map<String, Integer> map2 = dl.deadlock.event_line_map;
 									int line = map2.get(((EventNode) obj).getName());
 									lineInfo = document.getLineInformation(line - 1);
 								} catch (BadLocationException e) {
@@ -203,14 +204,14 @@ public class EchoDLView extends ViewPart{
 		existingbugs.clear();
 		//refresh
 		treeViewer.refresh();
-		translateToInput((HashSet<TIDEDeadlock>) bugs);
+		translateToInput(bugs);
 		treeViewer.setInput(deadlockDetail);
 		existingbugs.addAll(bugs);
 		treeViewer.expandToLevel(deadlockDetail, 1);
 	}
 
 
-	public void updateGUI(HashSet<TIDEDeadlock> addedbugs, HashSet<TIDEDeadlock> removedbugs) {
+	public void updateGUI(Set<TIDEDeadlock> addedbugs, Set<TIDEDeadlock> removedbugs) {
 		//only update changed bugs
 		for (TIDEDeadlock removed : removedbugs) {
 			if(existingbugs.contains(removed)){
@@ -228,7 +229,7 @@ public class EchoDLView extends ViewPart{
 	}
 
 
-	public void considerBugs(HashSet<TIDEDeadlock> ignores) {
+	public void considerBugs(Set<TIDEDeadlock> ignores) {
 		addToInput(ignores);
 		existingbugs.addAll(ignores);
 		treeViewer.refresh();
@@ -236,7 +237,7 @@ public class EchoDLView extends ViewPart{
 	}
 
 
-	public void ignoreBugs(HashSet<TIDEDeadlock> removeddeadlocks){
+	public void ignoreBugs(Set<TIDEDeadlock> removeddeadlocks){
 		for (ITIDEBug ignore : removeddeadlocks) {
 			if(existingbugs.contains(ignore)){
 				if(ignore instanceof TIDEDeadlock){
@@ -253,14 +254,14 @@ public class EchoDLView extends ViewPart{
 		treeViewer.expandToLevel(deadlockDetail, 1);
 	}
 
-	private void translateToInput(HashSet<TIDEDeadlock> bugs) {
+	private void translateToInput(Set<TIDEDeadlock> bugs) {
 		deadlockDetail.clear();
 		for (TIDEDeadlock bug : bugs) {
 			deadlockDetail.createChild(bug);
 		}
 	}
 
-	private void addToInput(HashSet<TIDEDeadlock> bugs) {
+	private void addToInput(Set<TIDEDeadlock> bugs) {
 		for (TIDEDeadlock bug : bugs) {
 			if(!existingbugs.contains(bug)){
 				deadlockDetail.createChild(bug, true);

@@ -1,24 +1,24 @@
 package edu.tamu.aser.tide.akkabug;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class FindSharedVariable {
 
-	private HashMap<String, HashMap<Integer, Integer>> variableReadMap;
-	private HashMap<String, HashMap<Integer, Integer>> variableWriteMap;
+	private Map<String, Map<Integer, Integer>> variableReadMap;
+	private Map<String, Map<Integer, Integer>> variableWriteMap;
 
-	public FindSharedVariable(HashMap<String, HashMap<Integer, Integer>> rsig_tid_num_map,
-			HashMap<String, HashMap<Integer, Integer>> wsig_tid_num_map) {
+	public FindSharedVariable(Map<String, Map<Integer, Integer>> rsig_tid_num_map,
+			Map<String, Map<Integer, Integer>> wsig_tid_num_map) {
 		// TODO Auto-generated constructor stub
 		this.variableReadMap = rsig_tid_num_map;
 		this.variableWriteMap = wsig_tid_num_map;
 	}
 
-	public HashMap<String, HashMap<Integer, Integer>> getVReadMap(){
+	public Map<String, Map<Integer, Integer>> getVReadMap(){
 		return variableReadMap;
 	}
 
-	public HashMap<String, HashMap<Integer, Integer>> getVWriteMap() {
+	public Map<String, Map<Integer, Integer>> getVWriteMap() {
 		return variableWriteMap;
 	}
 

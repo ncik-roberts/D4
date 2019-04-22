@@ -6,7 +6,7 @@ import com.ibm.wala.ipa.callgraph.CGNode;
 import com.ibm.wala.util.intset.IntSetUtil;
 import com.ibm.wala.util.intset.MutableIntSet;
 
-public class JoinNode extends SyncNode{
+public class JoinNode implements SyncNode{
 
 	final int parentTID;//direct parent
 	final int selfTID;

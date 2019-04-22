@@ -2,11 +2,12 @@ package edu.tamu.aser.tide.views;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
-public abstract class TreeNode implements ITreeNode{
+public abstract class TreeNode implements ITreeNode {
 	protected TreeNode parent;
 	protected boolean isNewest = false;
-	protected ArrayList children = new ArrayList<>();
+	protected List<ITreeNode> children = new ArrayList<>();
 
 	public TreeNode(TreeNode parent) {
 		this.parent = parent;
@@ -20,7 +21,7 @@ public abstract class TreeNode implements ITreeNode{
 		return parent;
 	}
 
-	public ArrayList getChildren() {
+	public List<ITreeNode> getChildren() {
 		return children;
 	}
 
@@ -30,6 +31,6 @@ public abstract class TreeNode implements ITreeNode{
 	}
 
 	/* subclasses should override this method and add the child nodes */
-	protected abstract void createChildren(ArrayList<LinkedList<String>> trace, String fix);
+	protected abstract void createChildren(List<LinkedList<String>> trace, String fix);
 
 }

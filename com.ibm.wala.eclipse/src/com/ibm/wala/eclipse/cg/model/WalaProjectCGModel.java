@@ -29,6 +29,7 @@ import com.ibm.wala.ipa.callgraph.ClassTargetSelector;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 import com.ibm.wala.ipa.callgraph.MethodTargetSelector;
 import com.ibm.wala.ipa.callgraph.impl.Util;
+import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.ipa.summaries.BypassClassTargetSelector;
 import com.ibm.wala.ipa.summaries.BypassMethodTargetSelector;
@@ -41,9 +42,9 @@ import com.ibm.wala.util.strings.Atom;
 
 import edu.tamu.wala.increpta.ipa.callgraph.propagation.IPASSAPropagationCallGraphBuilder;
 
-abstract public class WalaProjectCGModel implements WalaCGModel {
+abstract public class WalaProjectCGModel<I extends InstanceKey> implements WalaCGModel {
 
-  protected D4JDTJavaSourceAnalysisEngine engine;
+  protected D4JDTJavaSourceAnalysisEngine<I> engine;
 
   protected CallGraph callGraph;
 
@@ -53,7 +54,7 @@ abstract public class WalaProjectCGModel implements WalaCGModel {
 
     final EclipseProjectPath ep = JavaEclipseProjectPath.make(project, EclipseProjectPath.AnalysisScopeType.SOURCE_FOR_PROJ);
 
-    this.engine = new D4JDTJavaSourceAnalysisEngine(project) {
+    this.engine = new D4JDTJavaSourceAnalysisEngine<I>(project) {
       @Override
       public void buildAnalysisScope() {
         try {
@@ -94,6 +95,7 @@ abstract public class WalaProjectCGModel implements WalaCGModel {
     };
   }
 
+  @Override
   public void buildGraph() throws WalaException, CancelException {
     try {
       callGraph = ((IPASSAPropagationCallGraphBuilder) engine.defaultCallGraphBuilder()).getCallGraph();//AstJavaIPAZeroXCFABuilder
@@ -109,11 +111,13 @@ abstract public class WalaProjectCGModel implements WalaCGModel {
     return engine.getBuilder();
   }
 
+  @Override
   public CallGraph getGraph() {
     return callGraph;
   }
 
-  public Collection getRoots() {
+  @Override
+  public Collection<?> getRoots() {
     return roots;
   }
 

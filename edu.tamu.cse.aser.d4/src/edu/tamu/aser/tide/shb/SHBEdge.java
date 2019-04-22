@@ -1,7 +1,8 @@
 package edu.tamu.aser.tide.shb;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import edu.tamu.aser.tide.nodes.INode;
 
@@ -9,52 +10,50 @@ public class SHBEdge {
 
 	private INode node;
 	private String cgnode;
-	private HashSet<Integer> tids = new HashSet<>();	//edge tid mapping
-
+	private Set<Integer> tids = new HashSet<>(); // edge tid mapping
 
 	public SHBEdge(INode node, String n) {
 		this.node = node;
 		this.cgnode = n;
 		int tid = node.getTID();
-		if(!tids.contains(tid)){
+		if (!tids.contains(tid)) {
 			tids.add(tid);
 		}
 	}
 
-	public INode getSource(){
+	public INode getSource() {
 		return node;
 	}
 
 	/**
 	 * return sig of cgnode
+	 * 
 	 * @return
 	 */
-	public String getSink(){
+	public String getSink() {
 		return cgnode;
 	}
 
-	public void includeTid(int tid){
+	public void includeTid(int tid) {
 		tids.add(tid);
 	}
 
-	public void includeTids(ArrayList<Integer> tids){
+	public void includeTids(List<Integer> tids) {
 		this.tids.addAll(tids);
 	}
 
-	public void removeTid(int tid){
-		if(tids.contains(tid)){
+	public void removeTid(int tid) {
+		if (tids.contains(tid)) {
 			tids.remove(tid);
 		}
 	}
 
-	public HashSet<Integer> getEdgeTids(){
+	public Set<Integer> getEdgeTids() {
 		return tids;
 	}
 
-	public boolean doesIncludeTid(int tid){
+	public boolean doesIncludeTid(int tid) {
 		return tids.contains(tid);
 	}
-
-
 
 }

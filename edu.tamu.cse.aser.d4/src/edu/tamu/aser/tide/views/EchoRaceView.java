@@ -1,7 +1,7 @@
 package edu.tamu.aser.tide.views;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -10,8 +10,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -34,8 +32,6 @@ import edu.tamu.aser.tide.engine.ITIDEBug;
 import edu.tamu.aser.tide.engine.TIDEEngine;
 import edu.tamu.aser.tide.engine.TIDERace;
 
-
-
 public class EchoRaceView extends ViewPart{
 
 	protected TreeViewer treeViewer;
@@ -45,7 +41,7 @@ public class EchoRaceView extends ViewPart{
 	protected Action jumpToLineInEditor;
 
 	protected TIDEEngine bugEngine;
-	protected HashSet<TIDERace> existingbugs = new HashSet<>();
+	protected Set<TIDERace> existingbugs = new HashSet<>();
 
 	public EchoRaceView() {
 		super();
@@ -125,7 +121,7 @@ public class EchoRaceView extends ViewPart{
 					ITreeNode parent = ((EventNode) obj).getParent().getParent();
 					if(parent instanceof RaceNode){
 						RaceNode race = (RaceNode) parent;
-						HashMap<String, IFile> map = race.race.event_ifile_map;
+						Map<String, IFile> map = race.race.event_ifile_map;
 						IFile file = map.get(((EventNode) obj).getName());
 						if(file == null)
 							return;
@@ -139,7 +135,7 @@ public class EchoRaceView extends ViewPart{
 							if (document != null) {
 								IRegion lineInfo = null;
 								try {
-									HashMap<String, Integer> map2 = race.race.event_line_map;
+									Map<String, Integer> map2 = race.race.event_line_map;
 									int line = map2.get(((EventNode) obj).getName());
 									lineInfo = document.getLineInformation(line - 1);
 								} catch (BadLocationException e) {
@@ -155,7 +151,7 @@ public class EchoRaceView extends ViewPart{
 						}
 					}else if(parent instanceof DeadlockNode){
 						DeadlockNode dl = (DeadlockNode) parent;
-						HashMap<String, IFile> map = dl.deadlock.event_ifile_map;
+						Map<String, IFile> map = dl.deadlock.event_ifile_map;
 						IFile file = map.get(((EventNode) obj).getName());
 						if(file == null)
 							return;
@@ -168,7 +164,7 @@ public class EchoRaceView extends ViewPart{
 							if (document != null) {
 								IRegion lineInfo = null;
 								try {
-									HashMap<String, Integer> map2 = dl.deadlock.event_line_map;
+									Map<String, Integer> map2 = dl.deadlock.event_line_map;
 									int line = map2.get(((EventNode) obj).getName());
 									lineInfo = document.getLineInformation(line - 1);
 								} catch (BadLocationException e) {
@@ -204,15 +200,14 @@ public class EchoRaceView extends ViewPart{
 		existingbugs.clear();
 		//refresh
 		treeViewer.refresh();
-		translateToInput2((HashSet<TIDERace>) bugs);
+		translateToInput2(bugs);
 		treeViewer.setInput(raceDetail);
 		existingbugs.addAll(bugs);
 		treeViewer.expandToLevel(raceDetail, 1);
 	}
 
 
-	@SuppressWarnings("unchecked")
-	public void updateGUI(HashSet<TIDERace> addedbugs, HashSet<TIDERace> removedbugs) {
+	public void updateGUI(Set<TIDERace> addedbugs, Set<TIDERace> removedbugs) {
 		//only update changed bugs
 		for (TIDERace removed : removedbugs) {
 			if(existingbugs.contains(removed)){
@@ -229,14 +224,14 @@ public class EchoRaceView extends ViewPart{
 		treeViewer.expandToLevel(raceDetail, 1);
 	}
 
-	public void considerBugs(HashSet<TIDERace> considerbugs) {
+	public void considerBugs(Set<TIDERace> considerbugs) {
 		addToInput(considerbugs);
 		existingbugs.addAll(considerbugs);
 		treeViewer.refresh();
 		treeViewer.expandToLevel(raceDetail, 1);
 	}
 
-	public void ignoreBugs(HashSet<TIDERace> removedbugs){
+	public void ignoreBugs(Set<TIDERace> removedbugs){
 		for (ITIDEBug ignore : removedbugs) {
 			if(existingbugs.contains(ignore)){
 				if(ignore instanceof TIDERace){
@@ -254,7 +249,7 @@ public class EchoRaceView extends ViewPart{
 	}
 
 
-	private void translateToInput2(HashSet<TIDERace> bugs) {
+	private void translateToInput2(Set<TIDERace> bugs) {
 		raceDetail.clear();
 		for (ITIDEBug bug : bugs) {
 			if(bug instanceof TIDERace){
@@ -263,7 +258,7 @@ public class EchoRaceView extends ViewPart{
 		}
 	}
 
-	private void addToInput(HashSet<TIDERace> bugs) {
+	private void addToInput(Set<TIDERace> bugs) {
 		for (TIDERace race : bugs) {
 			if(!existingbugs.contains(race)){
 				raceDetail.createChild(race, true);
@@ -272,28 +267,11 @@ public class EchoRaceView extends ViewPart{
 	}
 
 	protected void hookListeners() {
-		treeViewer.addDoubleClickListener(new IDoubleClickListener() {
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				jumpToLineInEditor.run();
-			}
-		});
+		treeViewer.addDoubleClickListener(event -> jumpToLineInEditor.run());
 	}
-
-
 
 	@Override
 	public void setFocus() {
 	}
-
-	@Override
-	public Object getAdapter(Class arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
-
 
 }

@@ -2,6 +2,7 @@ package edu.tamu.aser.tide.akkabug;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 
@@ -10,24 +11,24 @@ import edu.tamu.aser.tide.nodes.ReadNode;
 import edu.tamu.aser.tide.nodes.WriteNode;
 
 
-public class CheckDatarace implements ITIDEBug{
+public class CheckDatarace implements ITIDEBug {
 
-	HashSet<WriteNode> writes;
-	HashSet<ReadNode> reads;
+	Set<WriteNode> writes;
+	Set<ReadNode> reads;
 	String sig;
 
-	public CheckDatarace(String sig, HashSet<WriteNode> writes2, HashSet<ReadNode> reads2) {
+	public CheckDatarace(String sig, Set<WriteNode> writes2, Set<ReadNode> reads2) {
 		// TODO Auto-generated constructor stub
 		this.sig = sig;
 		this.reads = reads2;
 		this.writes = writes2;
 	}
 
-	public HashSet<WriteNode> getWrites(){
+	public Set<WriteNode> getWrites(){
 		return writes;
 	}
 
-	public HashSet<ReadNode> getReads(){
+	public Set<ReadNode> getReads(){
 		return reads;
 	}
 

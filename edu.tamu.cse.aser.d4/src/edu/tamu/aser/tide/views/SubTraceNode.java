@@ -1,6 +1,6 @@
 package edu.tamu.aser.tide.views;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedList;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -36,7 +36,7 @@ public class SubTraceNode extends TreeNode{
 	}
 
 	@Override
-	protected void createChildren(ArrayList<LinkedList<String>> events, String fix) {
+	protected void createChildren(List<LinkedList<String>> events, String fix) {
 		// TODO Auto-generated method stub
 	}
 

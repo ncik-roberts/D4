@@ -2,11 +2,10 @@ package edu.tamu.aser.tide.views;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.commands.common.EventManager;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Adapters;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.text.BadLocationException;
@@ -56,8 +55,8 @@ public class EchoReadWriteView extends ViewPart {
 	protected Action showDetailTree;
 
 	protected TIDEEngine bugEngine;
-	protected HashSet<TIDERace> existingbugs = new HashSet<>();
-	protected HashSet<String> existingSigs = new HashSet<>();
+	protected Set<TIDERace> existingbugs = new HashSet<>();
+	protected Set<String> existingSigs = new HashSet<>();
 
 
 
@@ -162,8 +161,8 @@ public class EchoReadWriteView extends ViewPart {
 				ISelection selection = rootViewer.getSelection();
 				Object obj = ((IStructuredSelection) selection).getFirstElement();
 				if (obj instanceof EventNode) {
-					HashMap<String, IFile> map = new HashMap<>();
-					HashMap<String, Integer> map2 = new HashMap<>();
+					Map<String, IFile> map = new HashMap<>();
+					Map<String, Integer> map2 = new HashMap<>();
 					ITreeNode parent = ((EventNode) obj).getParent();
 					if(parent instanceof CSuperWriteNode){
 						CSuperWriteNode node = (CSuperWriteNode) parent;
@@ -224,8 +223,8 @@ public class EchoReadWriteView extends ViewPart {
 				ISelection selection = concurentRelationViewer.getSelection();
 				Object obj = ((IStructuredSelection) selection).getFirstElement();
 				if (obj instanceof EventNode) {
-					HashMap<String, IFile> map = new HashMap<>();
-					HashMap<String, Integer> map2 = new HashMap<>();
+					Map<String, IFile> map = new HashMap<>();
+					Map<String, Integer> map2 = new HashMap<>();
 					ITreeNode parent = ((EventNode) obj).getParent();
 					if(parent instanceof CSuperWriteNode){
 						CSuperWriteNode node = (CSuperWriteNode) parent;
@@ -306,12 +305,12 @@ public class EchoReadWriteView extends ViewPart {
 		//refresh
 		rootViewer.refresh();
 		concurentRelationViewer.refresh();
-		rootViewer.setInput(translateToInput((HashSet<TIDERace>) bugs));
+		rootViewer.setInput(translateToInput(bugs));
 		rootViewer.expandToLevel(relationDetail, 1);
 	}
 
 
-	public void updateGUI(HashSet<TIDERace> addedbugs, HashSet<TIDERace> removedbugs) {
+	public void updateGUI(Set<TIDERace> addedbugs, Set<TIDERace> removedbugs) {
 		//only update changed bugs
 		for (TIDERace removed : removedbugs) {
 			if(existingbugs.contains(removed)){
@@ -335,7 +334,7 @@ public class EchoReadWriteView extends ViewPart {
 	}
 
 
-	public void considerBugs(HashSet<TIDERace> considerbugs) {
+	public void considerBugs(Set<TIDERace> considerbugs) {
 		addToInput(considerbugs);
 		rootViewer.refresh();
 		rootViewer.expandToLevel(relationDetail, 1);
@@ -343,7 +342,7 @@ public class EchoReadWriteView extends ViewPart {
 	}
 
 
-	public void ignoreBugs(HashSet<TIDERace> removedbugs){
+	public void ignoreBugs(Set<TIDERace> removedbugs){
 		for (ITIDEBug ignore : removedbugs) {
 			if(existingbugs.contains(ignore)){
 				if(ignore instanceof TIDERace){
@@ -370,7 +369,7 @@ public class EchoReadWriteView extends ViewPart {
 	}
 
 
-	private BugDetail translateToInput(HashSet<TIDERace> bugs) {
+	private BugDetail translateToInput(Set<TIDERace> bugs) {
 		bugDetail.clear();
 		for (TIDERace race : bugs) {
 			String sig = race.sig;
@@ -387,7 +386,7 @@ public class EchoReadWriteView extends ViewPart {
 		return bugDetail;
 	}
 
-	private void addToInput(HashSet<TIDERace> bugs) {
+	private void addToInput(Set<TIDERace> bugs) {
 		for (TIDERace race : bugs) {
 			String sig = race.sig; // may need to change
 			if(existingSigs.contains(sig)){

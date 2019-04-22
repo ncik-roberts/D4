@@ -1,7 +1,7 @@
 package edu.tamu.aser.tide.views;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
@@ -43,9 +43,8 @@ public class DeadlockNode extends TreeNode{
 		return Activator.getImageDescriptor("lock-icon.png");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	protected void createChildren(ArrayList<LinkedList<String>> traces, String fix) {
+	protected void createChildren(List<LinkedList<String>> traces, String fix) {
 		LinkedList<String> trace1 = traces.get(0);
 		LinkedList<String> trace2 = traces.get(1);
 		if(this instanceof DeadlockNode){

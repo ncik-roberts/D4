@@ -1,8 +1,10 @@
 package edu.tamu.aser.tide.views;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.LinkedList;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -13,8 +15,8 @@ import edu.tamu.aser.tide.plugin.Activator;
 
 public class RWRelationNode extends TreeNode {
 	protected String name;
-	protected HashSet<TIDERace> races = new HashSet<>();
-	protected HashMap<String, CSuperWriteNode> map = new HashMap<>();
+	protected Set<TIDERace> races = new HashSet<>();
+	protected Map<String, CSuperWriteNode> map = new HashMap<>();
 
 	public RWRelationNode(TreeNode parent, String sig, TIDERace race) {
 		this(parent, sig, race, false);
@@ -40,7 +42,7 @@ public class RWRelationNode extends TreeNode {
 		return name;
 	}
 
-	public HashSet<TIDERace> getRaces(){
+	public Set<TIDERace> getRaces(){
 		return races;
 	}
 
@@ -55,7 +57,7 @@ public class RWRelationNode extends TreeNode {
 	}
 
 	@Override
-	protected void createChildren(ArrayList<LinkedList<String>> trace, String fix) {
+	protected void createChildren(List<LinkedList<String>> trace, String fix) {
 		// TODO Auto-generated method stub
 
 	}

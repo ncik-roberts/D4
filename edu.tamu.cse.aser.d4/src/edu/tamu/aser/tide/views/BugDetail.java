@@ -1,6 +1,6 @@
 package edu.tamu.aser.tide.views;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedList;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -18,19 +18,16 @@ public class BugDetail extends TreeNode{
 		this.name = "Bug Detail";
 	}
 
-	@SuppressWarnings("unchecked")
 	public void setRaceDetail(RaceDetail raceDetail) {
 		this.raceDetail = raceDetail;
 		super.children.add(raceDetail);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void setDeadlockDetail(DeadlockDetail deadlockDetail) {
 		this.deadlockDetail = deadlockDetail;
 		super.children.add(deadlockDetail);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void setRelation(RelationDetail relation) {
 		this.relationDetail = relation;
 		super.children.add(relation);
@@ -47,7 +44,7 @@ public class BugDetail extends TreeNode{
 	}
 
 	@Override
-	protected void createChildren(ArrayList<LinkedList<String>> trace, String fix) {
+	protected void createChildren(List<LinkedList<String>> trace, String fix) {
 		//children should be set already
 	}
 

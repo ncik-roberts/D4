@@ -1,18 +1,18 @@
 package edu.tamu.aser.tide.akkabug;
 
-import java.util.HashSet;
+import java.util.Set;
 
 import edu.tamu.aser.tide.nodes.DLockNode;
 
 public class IncrementalDeadlock {
 
-	private HashSet<DLockNode> interested_locks;
+	private Set<DLockNode> interested_locks;
 
-	public IncrementalDeadlock(HashSet<DLockNode> interested_l) {
+	public IncrementalDeadlock(Set<DLockNode> interested_l) {
 		this.interested_locks = interested_l;
 	}
 
-	public HashSet<DLockNode> getCheckSigs(){
+	public Set<DLockNode> getCheckSigs(){
 		return interested_locks;
 	}
 

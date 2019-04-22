@@ -1,8 +1,8 @@
 package edu.tamu.aser.tide.views;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -15,8 +15,8 @@ public class CWriteNode extends TreeNode{
 	public String name;
 	public WriteNode write;
 	public TIDERace race;
-	public HashMap<String, IFile> event_ifile_map;
-	public HashMap<String, Integer> event_line_map;
+	public Map<String, IFile> event_ifile_map;
+	public Map<String, Integer> event_line_map;
 
 	public CWriteNode(TreeNode parent, String rsig, WriteNode write, TIDERace race, int idx) {
 		super(parent);
@@ -44,16 +44,9 @@ public class CWriteNode extends TreeNode{
 	}
 
 	@Override
-	protected void createChildren(ArrayList<LinkedList<String>> trace, String fix) {
+	protected void createChildren(List<LinkedList<String>> trace, String fix) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@SuppressWarnings("unchecked")
-	private void createChild(int idx) {
-		String name = "Trace of " + this.name + " :";
-		SubTraceNode subtrace = new SubTraceNode(this, name, race.traceMsg.get(idx - 1));
-		super.children.add(subtrace);
 	}
 
 	@SuppressWarnings("unused")

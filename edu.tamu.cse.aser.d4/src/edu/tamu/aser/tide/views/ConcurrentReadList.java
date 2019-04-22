@@ -1,6 +1,6 @@
 package edu.tamu.aser.tide.views;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -30,7 +30,7 @@ public class ConcurrentReadList extends TreeNode{
 	}
 
 	@Override
-	protected void createChildren(ArrayList<LinkedList<String>> trace, String fix) {
+	protected void createChildren(List<LinkedList<String>> trace, String fix) {
 
 	}
 
@@ -39,7 +39,6 @@ public class ConcurrentReadList extends TreeNode{
 		createChild(rsig, read, race, idx, false);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void createChild(String rsig, ReadNode read, TIDERace race, int idx, boolean isNewest) {//fix later
 		if(!map.keySet().contains(rsig)){
 			CReadNode cread = new CReadNode(this, rsig, read, race, idx);

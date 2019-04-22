@@ -1,6 +1,7 @@
 package edu.tamu.aser.tide.views;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -13,7 +14,7 @@ import edu.tamu.aser.tide.plugin.Activator;
 public class ConcurrentWriteList extends TreeNode{
 
 	public String name = "Concurrent Write List";
-	public HashMap<String, CWriteNode> map = new HashMap<>();
+	public Map<String, CWriteNode> map = new HashMap<>();
 
 	public ConcurrentWriteList(TreeNode parent) {
 		super(parent);
@@ -30,7 +31,7 @@ public class ConcurrentWriteList extends TreeNode{
 	}
 
 	@Override
-	protected void createChildren(ArrayList<LinkedList<String>> trace, String fix) {
+	protected void createChildren(List<LinkedList<String>> trace, String fix) {
 		// TODO Auto-generated method stub
 
 	}
@@ -53,7 +54,7 @@ public class ConcurrentWriteList extends TreeNode{
 		if(map.keySet().contains(wsig)){
 			CWriteNode cwrite = map.get(wsig);
 			super.children.remove(cwrite);
-			map.remove(cwrite);
+			map.remove(wsig);
 		}
 	}
 

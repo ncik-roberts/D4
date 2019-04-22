@@ -1,16 +1,16 @@
 package edu.tamu.aser.tide.akkabug;
 
-import java.util.HashSet;
+import java.util.Set;
 
 public class IncreRemoveLocalVar {
 
-	private HashSet<String> checks;
+	private Set<String> checks;
 
-	public IncreRemoveLocalVar(HashSet<String> interested_rw) {
+	public IncreRemoveLocalVar(Set<String> interested_rw) {
 		this.checks = interested_rw;
 	}
 
-	public HashSet<String> getNodes(){
+	public Set<String> getNodes() {
 		return checks;
 	}
 

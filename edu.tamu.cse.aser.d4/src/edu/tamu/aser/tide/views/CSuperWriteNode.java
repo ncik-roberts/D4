@@ -1,8 +1,8 @@
 package edu.tamu.aser.tide.views;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -16,8 +16,8 @@ public class CSuperWriteNode extends TreeNode{
 	public String name;
 	public WriteNode write;
 	public ConcurrentRWList rwList = null;
-	public HashMap<String, IFile> event_ifile_map;
-	public HashMap<String, Integer> event_line_map;
+	public Map<String, IFile> event_ifile_map;
+	public Map<String, Integer> event_line_map;
 
 	public CSuperWriteNode(TreeNode parent, WriteNode write, String wsig, TIDERace race, int idx) {
 		super(parent);
@@ -57,7 +57,7 @@ public class CSuperWriteNode extends TreeNode{
 	}
 
 	@Override
-	protected void createChildren(ArrayList<LinkedList<String>> trace, String fix) {
+	protected void createChildren(List<LinkedList<String>> trace, String fix) {
 		// TODO Auto-generated method stub
 
 	}

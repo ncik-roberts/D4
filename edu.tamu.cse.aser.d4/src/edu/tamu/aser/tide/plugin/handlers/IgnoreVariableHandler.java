@@ -1,6 +1,7 @@
 package edu.tamu.aser.tide.plugin.handlers;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -78,18 +79,18 @@ public class IgnoreVariableHandler extends AbstractHandler {
 		IPath ipath = ((SourceType)path.getSegment(0)).getParent().getPath();
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(ipath);
 		Object element = treeSel.getFirstElement();
-		HashSet<TIDERace> all = new HashSet<>();
+		Set<TIDERace> all = new HashSet<>();
 		//option from echoviews
 		if(element instanceof RaceNode){
 			RaceNode racenode = (RaceNode) element;
 			TIDERace race = racenode.getRace();
 			String excludedSig = race.sig;
 			if(ignore){//ignore this variable
-				HashSet<TIDERace> others = engine.excludeThisSigForRace(race, excludedSig);
+				Set<TIDERace> others = engine.excludeThisSigForRace(race, excludedSig);
 				all.addAll(others);
 				all.add(race);
 			}else{//consider this variable
-				HashSet<TIDERace> others = engine.considerThisSigForRace(race, excludedSig);
+				Set<TIDERace> others = engine.considerThisSigForRace(race, excludedSig);
 				all.addAll(others);
 				all.add(race);
 			}
@@ -102,7 +103,7 @@ public class IgnoreVariableHandler extends AbstractHandler {
 		}else if(element instanceof RWRelationNode){
 			RWRelationNode relation = (RWRelationNode) element;
 			String excludedSig = relation.getSig();
-			HashSet<TIDERace> races = relation.getRaces();
+			Set<TIDERace> races = relation.getRaces();
 			if(ignore){//ignore this variable
 				engine.excludeThisSigForRace(races, excludedSig);
 				all.addAll(races);
@@ -124,10 +125,10 @@ public class IgnoreVariableHandler extends AbstractHandler {
 			}
 			String excludedSig = packagename +classname + "." + name;
 			if(ignore){//ignore this variable
-				HashSet<TIDERace> related = engine.excludeThisSigForRace(excludedSig);
+				Set<TIDERace> related = engine.excludeThisSigForRace(excludedSig);
 				all.addAll(related);
 			}else{//consider this variable
-				HashSet<TIDERace> related = engine.considerThisSigForRace(excludedSig);
+				Set<TIDERace> related = engine.considerThisSigForRace(excludedSig);
 				all.addAll(related);
 			}
 		}

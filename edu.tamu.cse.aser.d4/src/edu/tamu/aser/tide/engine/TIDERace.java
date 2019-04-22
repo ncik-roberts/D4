@@ -1,8 +1,9 @@
 package edu.tamu.aser.tide.engine;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 
@@ -17,9 +18,9 @@ public class TIDERace implements ITIDEBug{
 	public int tid1;
 	public int tid2;
 	public String raceMsg, fixMsg;
-	public ArrayList<LinkedList<String>> traceMsg;
-	public HashMap<String, IFile> event_ifile_map = new HashMap<>();
-	public HashMap<String, Integer> event_line_map = new HashMap<>();
+	public List<LinkedList<String>> traceMsg;
+	public Map<String, IFile> event_ifile_map = new HashMap<>();
+	public Map<String, Integer> event_line_map = new HashMap<>();
 
 	/**
 	 * for recheck bugs
@@ -62,7 +63,7 @@ public class TIDERace implements ITIDEBug{
 		}
 	}
 
-	public HashMap<String, Integer> getEventLineMap(){
+	public Map<String, Integer> getEventLineMap(){
 		return event_line_map;
 	}
 
@@ -70,7 +71,7 @@ public class TIDERace implements ITIDEBug{
 		event_line_map.put(event, line);
 	}
 
-	public HashMap<String, IFile> getEventIFileMap(){
+	public Map<String, IFile> getEventIFileMap(){
 		return event_ifile_map;
 	}
 
@@ -106,7 +107,7 @@ public class TIDERace implements ITIDEBug{
 		return false;
 	}
 
-	public void setBugInfo(String raceMsg, ArrayList<LinkedList<String>> traceMsg2, String fixMsg) {
+	public void setBugInfo(String raceMsg, List<LinkedList<String>> traceMsg2, String fixMsg) {
 		this.raceMsg = raceMsg;
 		this.fixMsg = fixMsg;
 		this.traceMsg = traceMsg2;

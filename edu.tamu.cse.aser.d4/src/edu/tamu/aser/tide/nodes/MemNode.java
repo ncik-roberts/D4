@@ -1,5 +1,6 @@
 package edu.tamu.aser.tide.nodes;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.eclipse.core.resources.IFile;
@@ -79,7 +80,7 @@ public abstract class MemNode implements INode {
 		return false;
 	}
 
-	public void replaceObjSig(HashSet<String> new_sigs){
+	public void replaceObjSig(Collection<? extends String> new_sigs){
 		objsigs.clear();
 		objsigs.addAll(new_sigs);
 	}
@@ -104,7 +105,7 @@ public abstract class MemNode implements INode {
 		objsigs.add(sig);
 	}
 
-	public void setObjSigs(HashSet<String> sigs){
+	public void setObjSigs(Collection<? extends String> sigs){
 		objsigs.addAll(sigs);
 	}
 
